@@ -10,7 +10,7 @@ async function login(){
     fd.append('email', email);
     fd.append('senha', senha);
 
-    const retorno = await fetch('../../usuario_login.php',
+    const retorno = await fetch('../src/controllers/usuario_login.php',
         {
             method: 'POST',
             body: fd
@@ -19,7 +19,7 @@ async function login(){
 
     const resposta = await retorno.json();
     if(resposta.status == 'ok'){
-        window.location.href = 'A DEFINIR!!!!'; //pagina que vai ser direcionado dps que fizer login
+        window.location.href = 'index.html'; // Redireciona para a home pós-login
     }else{
         alert('Credenciais inválidas. Tente novamente');
     }

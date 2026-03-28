@@ -1,5 +1,5 @@
 <?php
-    include_once('../../conexao.php');
+    include_once('../config/conexao.php');
 
     $retorno = [
         'status'    => '',
@@ -7,31 +7,38 @@
         'data'      => []
     ];
 
-    $stmt = $conexao->prepare('SELECT * FROM Usuario WHERE email = ? AND senha = ?');
-    $stmt->bind_param('ss',$_POST['email'],$_POST['senha']);
+    $stmt = $conexao->prepare('SELECT * FROM Usuario WHERE email = ?');
+    $stmt->bind_param('s', $_POST['email']);
 
     $stmt->execute();
-    $resultado = $stmt->getresult();
+    $resultado = $stmt->get_result();
 
-    $tabela = [];
     if($resultado->num_rows > 0){
-        while($linha = $resultado->fetch_assoc()){
+        $linha = $resultado->fetch_assoc();
+
+        if (password_verify($_POST['senha'], $linha['senha'])) {
             $tabela[] = $linha;
+
+            session_start();
+            $_SESSION['usuario'] = $linha; // Salvamos os dados validados
+
+            $retorno = [
+                'status'    => 'ok',
+                'mensagem'  => 'Sucesso, consulta efetuada!',
+                'data'      => $tabela
+            ];
+        } else {
+            $retorno = [
+                'status'    => 'nok',
+                'mensagem'  => 'Senha incorreta.',
+                'data'      => []
+            ];
         }
-
-        session_start();
-        $_SESSION['email'] = $tabela;
-
-        $retorno = [
-            'status'    => 'ok',
-            'mensagem'  => 'Sucesso, consulta efetuada!'
-            'data'      => $tabela
-        ];
 
     }else{
         $retorno = [
             'status'    => 'nok',
-            'mensagem'  => 'Não há registros.'
+            'mensagem'  => 'Não há registros.',
             'data'      => []
         ];
     }

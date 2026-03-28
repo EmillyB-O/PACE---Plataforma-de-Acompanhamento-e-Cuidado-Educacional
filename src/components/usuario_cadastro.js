@@ -5,48 +5,40 @@ document.getElementById('enviar').addEventListener('click', () => { //"escuta" o
 var seletor = document.getElementById('cargo');
 
 seletor.addEventListener('change', function() {
+    const div_admin = document.getElementById('div_admin');
+    const div_pedagogo = document.getElementById('div_pedagogo');
+    const div_saude = document.getElementById('div_saude');
+    const div_prof = document.getElementById('div_prof');
+    const div_responsavel = document.getElementById('div_responsavel');
 
-    //IMPORTANTE: para cada informacao nova para um usuario especifico, colocar a div aqui para funcionar o style
-    div_admin.style.display = 'none'; //esconde shhhhh
-    div_pedagogo.style.display = 'none';
-    div_saude.style.display = 'none';
-    div_prof.style.display = 'none';
-    div_responsavel.style.display = 'none';
+    if(div_admin) div_admin.style.display = 'none';
+    if(div_pedagogo) div_pedagogo.style.display = 'none';
+    if(div_saude) div_saude.style.display = 'none';
+    if(div_prof) div_prof.style.display = 'none';
+    if(div_responsavel) div_responsavel.style.display = 'none';
 
-
-    if(this.value === '1'){ //adm
-        div_admin.style.display = 'block'; //mostra o conteudo da div dos elementos do adm
-    }else if(this.value === '2'){ //pedagogo
+    if(this.value === '1' && div_admin){
+        div_admin.style.display = 'block';
+    }else if(this.value === '2' && div_pedagogo){
         div_pedagogo.style.display = 'block';
-    }else if(this.value === '3'){ //profissional da saude
+    }else if(this.value === '3' && div_saude){
         div_saude.style.display = 'block';
-    }else if(this.value === '4'){ //professor
+    }else if(this.value === '4' && div_prof){
         div_prof.style.display = 'block';
-    }else if(this.value === '5'){ //responsavel legal
+    }else if(this.value === '5' && div_responsavel){
         div_responsavel.style.display = 'block';
     }
 });
 
-async function novo() { //a funcao que o botao chama
+async function novo() {
     var nome = document.getElementById('nome').value;
     var email = document.getElementById('email').value;
     var cpf = document.getElementById('cpf').value;
     var senha = document.getElementById('senha').value;
-    var cargo = document.getElementById('cargo');
+    var cargo = document.getElementById('cargo').value;
     var telefone = document.getElementById('telefone').value;
     
-    var nivel_permissao = document.getElementById('nivel_permissao').value;
-    var instituicao = document.getElementById('instituicao').value;
-    var cndb = document.getElementById('cndb').value;
-    var especializacao = document.getElementById('especializacao').value;
-    var crm = document.getElementById('crm').value;
-    var crp = document.getElementById('crp').value;
-    var materia = document.getElementById('materia').value;
-    var data_nasc = document.getElementById('data_nasc').value;
-    
-    //pega os valores do front e prepara para enviar pro back
-
-    const fd = new FormData(); //faz isso com formdata
+    const fd = new FormData();
     fd.append('nome', nome);
     fd.append('email', email);
     fd.append('cpf', cpf);
@@ -54,8 +46,7 @@ async function novo() { //a funcao que o botao chama
     fd.append('cargo', cargo);
     fd.append('telefone', telefone);
 
-    //serve para dar append somente nos itens que pertencem ao determinado cargo do usuario
-    if(cargo === '1'){//adm
+    if(cargo === '1'){
         fd.append('nivel_permissao', document.getElementById('nivel_permissao').value);
         //o adm vem com o nivel de permissao para adm instituicionais, entretanto ele só é linkado com a instituição depois de alguem atribuir ele à ela
     }else if(cargo === '2'){//pedagogo
@@ -67,7 +58,8 @@ async function novo() { //a funcao que o botao chama
         fd.append('crp', document.getElementById('crp').value);
 
     }else if(cargo === '4'){//professor
-        fd.append('cndb', document.getElementById('instituicao').value);
+        fd.append('cndb', document.getElementById('cndb').value);
+        fd.append('instituicao', document.getElementById('instituicao').value);
         fd.append('materia', document.getElementById('materia').value); 
     }else if(cargo === '5'){//responsavel legal
         fd.append('data_nasc', document.getElementById('data_nasc').value);
@@ -75,7 +67,7 @@ async function novo() { //a funcao que o botao chama
 
     //isso serve para identificar se a transacao deu certo ou nn, pois para enviar os dados de usuario para o banco é necessario uma transacao 
     try {
-        const retorno = await fetch('../../adm_novo.php',
+        const retorno = await fetch('../src/controllers/usuario_cadastro.php',
             {
                 method: 'POST',
                 body: fd
@@ -84,10 +76,10 @@ async function novo() { //a funcao que o botao chama
 
         const resposta = await retorno.json();
         if(resposta.status == 'ok'){
-            alert('Sucesso: ', resposta.mensagem);
-            window.location.href = 'A DEFINIR!'//colocar url da home apos login
+            alert('Sucesso: ' + resposta.mensagem);
+            window.location.href = 'index.html'; // direciona pra home apos criar acc
         }else{
-            alert('Erro: ', resposta.mensagem);
+            alert('Erro: ' + resposta.mensagem);
         }
     }catch(erro){
         console.error("Erro na requisição: ", erro);
