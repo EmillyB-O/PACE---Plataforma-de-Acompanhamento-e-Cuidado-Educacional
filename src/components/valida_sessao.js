@@ -6,3 +6,11 @@ async function valida_sessao() {
         window.location.href = 'login.html'
     }
 }
+
+async function logoff() {
+    const retorno = await fetch('../src/controllers/usuario_logoff.php');
+    const resposta = await retorno.json();
+    if(resposta.status == 'ok'){
+        window.location.href = 'login.html';
+    }
+}

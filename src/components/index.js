@@ -7,18 +7,6 @@ document.getElementById('novo').addEventListener('click', () => {
     window.location.href = 'cadastro.html';
 });
 
-document.getElementById('logoff').addEventListener('click', () => {
-    logoff();
-});
-
-async function logoff() {
-    const retorno = await fetch('../src/controllers/usuario_logoff.php');
-    const resposta = await retorno.json();
-    if(resposta.status == 'ok'){
-        window.location.href = 'login.html';
-    }
-}
-
 async function buscar() {
     const retorno = await fetch('../src/controllers/usuario_get.php');
     const resposta = await retorno.json();
