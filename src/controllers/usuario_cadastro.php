@@ -66,7 +66,6 @@
 
         $conexao->commit();
 
-        $conexao->commit();
 
         $retorno = [
             'status'    => 'ok',

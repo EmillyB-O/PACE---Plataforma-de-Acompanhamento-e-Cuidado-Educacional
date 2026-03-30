@@ -41,7 +41,7 @@
             'data'      => []
         ];
     }
-       
+    
     $conexao->close();
 
     header("Content-type:application/json;charset:utf-8");

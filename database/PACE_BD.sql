@@ -134,6 +134,3 @@ CREATE TABLE Avisos (
     id_administrador INT NOT NULL,
     FOREIGN KEY (id_administrador) REFERENCES Administrador(id_usuario)
 );
-
-
-
