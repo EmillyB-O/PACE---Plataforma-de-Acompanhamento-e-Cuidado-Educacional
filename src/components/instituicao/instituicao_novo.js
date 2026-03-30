@@ -24,7 +24,7 @@ async function novo() {
         const resposta = await retorno.json();
         if(resposta.status == 'ok'){
             alert('Sucesso: ' + resposta.mensagem);
-            window.location.href = 'index.html'; // direciona pra home apos criar acc
+            window.location.href = 'instituicoes.html'; // direciona pra lista apos criar
         }else{
             alert('Erro: ' + resposta.mensagem);
         }

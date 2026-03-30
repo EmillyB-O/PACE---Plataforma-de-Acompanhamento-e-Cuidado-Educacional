@@ -1,5 +1,6 @@
 <?php 
-    include_once('conexao.php');
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    include_once('../../config/conexao.php');
 
     $retorno = [
         'status' => '',
@@ -11,24 +12,32 @@
         $nome = $_POST['nome'];
         $endereco = $_POST['endereco'];
         $codigo = $_POST['codigo'];
-        $stmt = $conexao->prepare("UPDATE cliente SET nome = ?, endereco = ?, codigo = ? WHERE id = ?");
-        $stmt->bind_param("ssii", $nome, $endereco, $codigo, $_GET['id']);
-        $stmt->execute();
 
-        if($stmt->affected_rows > 0){
+        try {
+            $conexao->begin_transaction();
+            $stmt = $conexao->prepare("UPDATE Instituicao SET nome = ?, endereco = ?, codigo = ? WHERE id = ?");
+            $stmt->bind_param("ssii", $nome, $endereco, $codigo, $_GET['id']);
+            $stmt->execute();
+            $conexao->commit();
+
             $retorno = [
                 'status' => 'ok',
                 'mensagem' => 'Registro alterado com sucesso',
                 'data' => []
             ];
-        }else{
+
+        } catch (mysqli_sql_exception $e) {
+            $conexao->rollback();
             $retorno = [
                 'status' => 'nok',
-                'mensagem' => 'Não posso alterar um registtro.'.json_encode($_GET),
+                'mensagem' => 'Erro ao alterar a Instituição: ' . $e->getMessage(),
                 'data' => []
             ];
-        } 
-        $stmt->close();
+        }
+
+        if(isset($stmt) && $stmt !== false) {
+            $stmt->close();
+        }
 
     }else{
         $retorno = [

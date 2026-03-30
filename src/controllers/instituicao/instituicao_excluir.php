@@ -1,5 +1,6 @@
 <?php
-    include_once('conexao.php');
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    include_once('../../config/conexao.php');
 
     $retorno = [ 
         'status'    => '',
@@ -8,23 +9,35 @@
     ];
     
     if(isset($_GET['id'])){
-        $stmt = $conexao->prepare("DELETE FROM instituicao WHERE id= ?");
-        $stmt->bind_param("i", $_GET['id']);
-        $stmt->execute();
-        if($stmt->affected_rows > 0){
-            $retorno = [ 
-                'status'    => 'ok',
-                'mensagem'  => 'Registro excluído com sucesso.',
-                'data'      => []
-            ];
-        }else{
+        try {
+            $stmt = $conexao->prepare("DELETE FROM Instituicao WHERE id= ?");
+            $stmt->bind_param("i", $_GET['id']);
+            $stmt->execute();
+            
+            if($stmt->affected_rows > 0){
+                $retorno = [ 
+                    'status'    => 'ok',
+                    'mensagem'  => 'Registro excluído com sucesso.',
+                    'data'      => []
+                ];
+            }else{
+                $retorno = [ 
+                    'status'    => 'nok',
+                    'mensagem'  => 'Registro não encontrado para exclusão.',
+                    'data'      => []
+                ];
+            }
+        } catch (mysqli_sql_exception $e) {
             $retorno = [ 
                 'status'    => 'nok',
-                'mensagem'  => 'Registro não excluido.',
+                'mensagem'  => 'Falha ao excluir! Existem usuários associados a esta instituição: ' . $e->getMessage(),
                 'data'      => []
             ];
         }
-        $stmt->close();
+
+        if (isset($stmt) && $stmt !== false) {
+            $stmt->close();
+        }
     }else{
         $retorno = [
             'status'    => 'nok', 

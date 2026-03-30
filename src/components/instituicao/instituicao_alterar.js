@@ -1,16 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
     valida_sessao();
-    const url = new URLSearchParams(window.location.serach);
+    const url = new URLSearchParams(window.location.search);
     const id = url.get("id");
     buscar(id);
 
 });
 
 async function buscar(id) {
-    const retorno = await fetch('../../../instituicao_get.php?id='+id)
+    const retorno = await fetch('../src/controllers/instituicao/instituicao_get.php?id='+id);
     const resposta = await retorno.json();
     if(resposta.status == 'ok'){
-        alert("SUCESSO" + resposta.mensagem);
         var registro = resposta.data[0];
         document.getElementById("nome").value = registro.nome;
         document.getElementById("endereco").value = registro.endereco;
@@ -18,7 +17,7 @@ async function buscar(id) {
         document.getElementById("id").value = registro.id;
     }else{
         alert("ERRO:" + resposta.mensagem);
-        window.location.href = "instuicoes.html";
+        window.location.href = "instituicoes.html";
     }
 }
 document.getElementById("enviar").addEventListener("click", () => {
@@ -36,7 +35,7 @@ async function alterar(){
     fd.append('endereco', endereco);
     fd.append('codigo', codigo);
     
-    const retorno = await fetch('../../../instituicao_alterar.php?id='+id,
+    const retorno = await fetch('../src/controllers/instituicao/instituicao_alterar.php?id='+id,
         {
             method: 'POST',
             body: fd
