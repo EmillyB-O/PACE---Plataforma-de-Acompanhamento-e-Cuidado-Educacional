@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.getElementById('novo').addEventListener('click', () => {
-    window.location.href = 'cadastro.html';
+    window.location.href = 'cadastro_admin.html';
 });
 
 async function buscar() {
