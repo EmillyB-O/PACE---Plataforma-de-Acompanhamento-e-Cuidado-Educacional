@@ -1,5 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
     valida_sessao();
+
+    // Limpeza cpf: para remover tudo que não é número + limite de 11 dígitos
+    const cpfInput = document.getElementById('cpf');
+    if (cpfInput) {
+        cpfInput.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11);
+        });
+    }
+
+    const telInput = document.getElementById('telefone');
+    if (telInput) {
+        telInput.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11);
+        });
+    }
 });
 
 document.getElementById('enviar').addEventListener('click', () => { //"escuta" o clique do botao e automaticamente executa a funcao
@@ -37,10 +52,10 @@ seletor.addEventListener('change', function() {
 async function novo() {
     var nome = document.getElementById('nome').value;
     var email = document.getElementById('email').value;
-    var cpf = document.getElementById('cpf').value;
+    var cpf = document.getElementById('cpf').value.replace(/\D/g, '');
     var senha = document.getElementById('senha').value;
     var cargo = document.getElementById('cargo').value;
-    var telefone = document.getElementById('telefone').value;
+    var telefone = document.getElementById('telefone').value.replace(/\D/g, '');
     
     const fd = new FormData();
     fd.append('nome', nome);

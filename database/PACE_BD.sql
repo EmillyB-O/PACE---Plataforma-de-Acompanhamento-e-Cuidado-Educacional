@@ -13,17 +13,22 @@ CREATE TABLE Usuario (
     email VARCHAR(255) NOT NULL UNIQUE,
     cpf VARCHAR(14) NOT NULL UNIQUE, 
     senha VARCHAR(255) NOT NULL,
-    status TINYINT NOT NULL, -- 1: Ativo, 2: Inativo, 3: Banido
-    cargo TINYINT NOT NULL, -- 1: Administrador, 2: Pedagogo, 3: Profissional da Saúde, 4: Professor, 5: Responsável Legal
+    status ENUM ('1','2','3') NOT NULL, -- 1: Ativo, 2: Inativo, 3: Banido
+    cargo ENUM ('1','2','3','4','5') NOT NULL, -- 1: Administrador, 2: Pedagogo, 3: Profissional da Saúde, 4: Professor, 5: Responsável Legal
     telefone VARCHAR(14) NOT NULL
 );
+-- alter table Usuario modify column status ENUM ('1','2','3') NOT NULL;
+-- alter table Usuario modify column cargo ENUM ('1','2','3','4','5') NOT NULL;
+
 CREATE TABLE Administrador (
     id_usuario INT PRIMARY KEY,
-    nivel_permissao TINYINT NOT NULL, -- 0: Global, 1: Institucional
+    nivel_permissao ENUM ('0','1') NOT NULL, -- 0: Global, 1: Institucional
     id_instituicao INT,
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id),
     FOREIGN KEY (id_instituicao) REFERENCES Instituicao(id)
 );
+-- alter table Administrador modify column nivel_permissao ENUM ('0','1') NOT NULL;
+
 CREATE TABLE Pedagogo (
     id_usuario INT PRIMARY KEY,
     cndb VARCHAR(20),
@@ -79,10 +84,12 @@ CREATE TABLE Aluno (
     id_instituicao INT NOT NULL,
     serie INT NOT NULL,
     foto MEDIUMBLOB,
-    status TINYINT NOT NULL, -- 0: Matriculado, 1: Transferido, 2: Concluinte
+    status ENUM ('0','1','2') NOT NULL, -- 0: Matriculado, 1: Transferido, 2: Concluinte
     FOREIGN KEY (id_turma) REFERENCES Turma(id),
     FOREIGN KEY (id_instituicao) REFERENCES Instituicao(id)
 );
+-- alter table Aluno modify column status ENUM ('0','1','2') NOT NULL;
+
 CREATE TABLE Responsavel_Aluno (
 	id_aluno INT NOT NULL,
     id_responsavel INT NOT NULL,
