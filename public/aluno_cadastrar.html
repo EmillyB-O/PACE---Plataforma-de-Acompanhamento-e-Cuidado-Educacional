@@ -51,29 +51,58 @@
         </div>
     </nav>
 
+
+
+
     <div class="container mt-4 mb-5">
         <div class="row justify-content-center">
             <div class="col-md-6 card p-4 shadow">
-                <h3 class="text-center mb-4">Cadastro de Instituição</h5>
+                <h3 class="text-center mb-4">Cadastro de Aluno</h5>
                 
                 <div class="row mb-3">
                     <div class="col">
-                        <label for="nome" class="form-label">Nome da Instituição</label>
-                        <input type="text" class="form-control" id="nome">
+                        <label for="nome" class="form-label">Nome do aluno</label>
+                        <input type="text" class="form-control" id="nome">   
                     </div>
                 </div>
-
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="serie" class="form-label">Série</label>
+                        <input type="number" class="form-control" id="serie">
+                    </div>
+                </div>
                 <div class="row mb-3">
                     <div class="col">
-                        <label for="endereco" class="form-label">Endereço</label>
-                        <input type="text" class="form-control" id="endereco">
+                        <label for="nascimento" class="form-label">Data de nascimento</label>
+                        <input type="date" class="form-control" id="nascimento">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">matricula</label>  
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="matriculado" id="radio-matriculado" value="matriculado">
+                        <label class="form-check-label" for="radio-matriculado">Matriculado</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="transferido" id="transferido" value="transferido">
+                        <label class="form-check-label" for="radio-transferido">Transferido</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="concluinte" id="concluinte" value="concluinte">
+                        <label class="form-check-label" for="radio-concluinte">Concluinte</label>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="codigo" class="form-label">Código da Instituição</label>
-                        <input type="number" class="form-control" id="codigo">
+                        <label for="codigo_instituição" class="form-label">Id da instituicao</label>
+                        <input type="number" class="form-control" id="codigo_instituição">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="codigo_turma" class="form-label">Id da turma</label>
+                        <input type="number" class="form-control" id="codigo_turma">
                     </div>
                 </div>
 

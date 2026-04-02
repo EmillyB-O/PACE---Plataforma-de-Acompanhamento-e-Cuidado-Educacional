@@ -76,7 +76,7 @@ CREATE TABLE Professor_Turma (
     FOREIGN KEY (id_turma) REFERENCES Turma(id)
 );
 CREATE TABLE Aluno (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,  
     nome VARCHAR(100) NOT NULL,
     data_nascimento DATE,
     matricula INT,

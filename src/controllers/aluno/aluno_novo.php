@@ -1,0 +1,48 @@
+<?php
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    include_once('../../config/conexao.php');
+    $retorno = [
+        'status'    => '',
+        'mensagem'  => '',
+        'data'      => []
+    ];
+
+        $nome       = $_POST['nome'];
+        $nascimento       = $_POST['nascimento'];
+        $serie   = $_POST['serie'];
+        $matricula     = $_POST['matricula']; 
+        $id_instituicao     = $_POST['id_instituicao'];
+        $id_turma     = $_POST['id_turma'];
+
+    try {
+        $conexao->begin_transaction();
+        $status = 1; // 1: Ativo
+        $stmt = $conexao->prepare('INSERT INTO Instituicao (nome, serie, ano, quantidade, codigo) VALUES (?,?,?,?,?)');
+        $stmt->bind_param('ssi',$nome,$serie,$ano,$quantidade,$codigo);
+        $stmt->execute();
+        $conexao->commit();
+
+        $retorno = [
+            'status'    => 'ok',
+            'mensagem'  => 'Registro inserido com sucesso!',
+            'data'      => []
+        ];
+    } catch (mysqli_sql_exception $e) {
+        if (isset($conexao)) {
+            $conexao->rollback();
+        }
+
+        $retorno = [
+            'status'    => 'nok',
+            'mensagem'  => 'Falha ao inserir o registro: ' . $e->getMessage(),
+            'data'      => []
+        ];
+    }
+
+    if(isset($stmt) && $stmt !== false) {
+        $stmt->close();
+    }
+    $conexao->close();
+
+    header('Content-type:application/json;charset:utf-8');
+    echo json_encode($retorno);
