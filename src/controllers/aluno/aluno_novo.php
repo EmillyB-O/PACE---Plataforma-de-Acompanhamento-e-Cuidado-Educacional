@@ -15,29 +15,29 @@
         $id_turma     = $_POST['id_turma'];
 
     try {
-        $conexao->begin_transaction();
-        $status = 1; // 1: Ativo
-        $stmt = $conexao->prepare('INSERT INTO Instituicao (nome, serie, ano, quantidade, codigo) VALUES (?,?,?,?,?)');
-        $stmt->bind_param('ssi',$nome,$serie,$ano,$quantidade,$codigo);
-        $stmt->execute();
-        $conexao->commit();
+    $conexao->begin_transaction();
+    $status = '0'; // 0: Matriculado
+    $stmt = $conexao->prepare('INSERT INTO Aluno (nome, data_nascimento, matricula, id_turma, id_instituicao, serie, status) VALUES (?,?,?,?,?,?,?)');
+    $stmt->bind_param('ssiiiis', $nome, $nascimento, $matricula, $id_turma, $id_instituicao, $serie, $status);
+    $stmt->execute();
+    $conexao->commit();
 
-        $retorno = [
-            'status'    => 'ok',
-            'mensagem'  => 'Registro inserido com sucesso!',
-            'data'      => []
-        ];
-    } catch (mysqli_sql_exception $e) {
-        if (isset($conexao)) {
-            $conexao->rollback();
-        }
-
-        $retorno = [
-            'status'    => 'nok',
-            'mensagem'  => 'Falha ao inserir o registro: ' . $e->getMessage(),
-            'data'      => []
-        ];
+    $retorno = [
+        'status' => 'ok',
+        'mensagem' => 'Aluno inserido com sucesso!',
+        'data' => []
+    ];
+} catch (mysqli_sql_exception $e) {
+    if (isset($conexao)) {
+        $conexao->rollback();
     }
+
+    $retorno = [
+        'status' => 'nok',
+        'mensagem' => 'Não foi possível realizar a operação no Aluno: ' . $e->getMessage(),
+        'data' => []
+    ];
+}
 
     if(isset($stmt) && $stmt !== false) {
         $stmt->close();

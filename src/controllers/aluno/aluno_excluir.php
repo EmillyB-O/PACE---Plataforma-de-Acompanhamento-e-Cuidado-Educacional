@@ -10,28 +10,28 @@
     
     if(isset($_GET['id'])){
         try {
-            $stmt = $conexao->prepare("DELETE FROM turma WHERE id= ?");
+            $stmt = $conexao->prepare("DELETE FROM Aluno WHERE id= ?");
             $stmt->bind_param("i", $_GET['id']);
             $stmt->execute();
-            
-            if($stmt->affected_rows > 0){
-                $retorno = [ 
-                    'status'    => 'ok',
-                    'mensagem'  => 'Registro excluído com sucesso.',
-                    'data'      => []
+
+            if ($stmt->affected_rows > 0) {
+                $retorno = [
+                    'status' => 'ok',
+                    'mensagem' => 'Aluno excluído com sucesso.',
+                    'data' => []
                 ];
-            }else{
-                $retorno = [ 
-                    'status'    => 'nok',
-                    'mensagem'  => 'Registro não encontrado para exclusão.',
-                    'data'      => []
+            } else {
+                $retorno = [
+                    'status' => 'nok',
+                    'mensagem' => 'Aluno não encontrado para exclusão.',
+                    'data' => []
                 ];
             }
         } catch (mysqli_sql_exception $e) {
-            $retorno = [ 
-                'status'    => 'nok',
-                'mensagem'  => 'Falha ao excluir! Existem usuários associados a esta instituição: ' . $e->getMessage(),
-                'data'      => []
+            $retorno = [
+                'status' => 'nok',
+                'mensagem' => 'Falha ao excluir esse Aluno! Existem vínculos dependentes (laudos/relatórios).',
+                'data' => []
             ];
         }
 

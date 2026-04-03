@@ -141,3 +141,21 @@ CREATE TABLE Avisos (
     id_administrador INT NOT NULL,
     FOREIGN KEY (id_administrador) REFERENCES Administrador(id_usuario)
 );
+
+-- Login: admin@pace.com
+-- Senha: password
+
+INSERT INTO Usuario (nome, email, cpf, senha, status, cargo, telefone) 
+VALUES (
+    'Administrador Global', 
+    'admin@pace.com', 
+    '000.000.000-00', 
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', -- Hash para "password"
+    '1', 
+    '1', 
+    '(00)00000-0000'
+);
+
+INSERT INTO Administrador (id_usuario, nivel_permissao, id_instituicao)
+VALUES (1, '0', NULL);
+

@@ -19,8 +19,13 @@ async function login(){
 
     const resposta = await retorno.json();
     if(resposta.status == 'ok'){
-        window.location.href = 'index.html'; // Redireciona para a home pós-login
+        const usuarioLogado = resposta.data[0];
+        if (usuarioLogado.cargo == '1') {
+            window.location.href = 'painel_admin.html';
+        } else {
+            window.location.href = 'index.html'; 
+        }
     }else{
-        alert('Credenciais inválidas. Tente novamente');
+        alert(resposta.mensagem || 'Credenciais inválidas. Tente novamente');
     }
 }

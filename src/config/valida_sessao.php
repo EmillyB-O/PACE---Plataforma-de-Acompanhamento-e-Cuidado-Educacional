@@ -4,7 +4,7 @@
         $retorno = [
             'status'    => 'ok', 
             'mensagem'  => '', 
-            'data'      => []
+            'data'      => $_SESSION['usuario']
         ];
     }else{
         $retorno = [

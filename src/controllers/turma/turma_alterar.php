@@ -15,27 +15,27 @@
         $quantidade     = $_POST['quantidade'];
         $codigo     = $_POST['codigo'];
 
-        try {
-            $conexao->begin_transaction();
-            $stmt = $conexao->prepare("UPDATE turma SET nome = ?, serie = ?, ano = ?, quantidade = ?, codigo = ? WHERE id = ?");
-            $stmt->bind_param("ssii", $nome,$serie,$ano,$quantidade,$codigo, $_GET['id']);
-            $stmt->execute();
-            $conexao->commit();
+    try {
+        $conexao->begin_transaction();
+        $stmt = $conexao->prepare("UPDATE Turma SET nome = ?, serie = ?, ano = ?, qntd_alunos = ?, id_instituicao = ? WHERE id = ?");
+        $stmt->bind_param("siiiii", $nome, $serie, $ano, $quantidade, $codigo, $_GET['id']);
+        $stmt->execute();
+        $conexao->commit();
 
-            $retorno = [
-                'status' => 'ok',
-                'mensagem' => 'Registro alterado com sucesso',
-                'data' => []
-            ];
+        $retorno = [
+            'status' => 'ok',
+            'mensagem' => 'Turma alterada com sucesso',
+            'data' => []
+        ];
 
-        } catch (mysqli_sql_exception $e) {
-            $conexao->rollback();
-            $retorno = [
-                'status' => 'nok',
-                'mensagem' => 'Erro ao alterar a Instituição: ' . $e->getMessage(),
-                'data' => []
-            ];
-        }
+    } catch (mysqli_sql_exception $e) {
+        $conexao->rollback();
+        $retorno = [
+            'status' => 'nok',
+            'mensagem' => 'Não foi possível alterar a Turma: ' . $e->getMessage(),
+            'data' => []
+        ];
+    }
 
         if(isset($stmt) && $stmt !== false) {
             $stmt->close();
