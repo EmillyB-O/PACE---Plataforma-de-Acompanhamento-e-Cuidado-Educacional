@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="../src/assets/css/style.css">
+    <link href='https://fonts.googleapis.com/css?family=Indie Flower' rel='stylesheet'>
+    <title>PACE</title>
+</head>
+<body style="background-color: #ffe7d6;">
+    <nav class="navbar navbar-expand-lg" style="background-color: #004e7a;" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">PACE</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="home.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contato</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item active">
+                        <a href="login.html">
+                            <button type="button" class="btn btn-outline-warning">Login</button>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="cadastro.html">
+                            <button type="button" class="btn btn-outline-warning">Cadastro</button>
+                        </a>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid p-0">
+        <img src="../src/assets/img/banner.png" alt="Banner PACE" id="banner" class="img-fluid">
+    </div>
+
+    <div class="p-5 text-center">
+        <h1 style="font-family: 'Indie Flower'; color: #004e7a;"><b>Cada aluno tem seu próprio ritmo!</b></h1>
+        <p>Conectando escola, família e especialistas</p>
+    </div>
+
+    <div class="text-center col-10 mx-auto border rounded p-4" style="background-color: #004e7a;">
+        <h2 style="color: #fecf5d;"><b>O que é o PACE?</b></h2>
+        <p style="color: white;">O PACE é uma plataforma inovadora de acompanhamento e cuidado educacional, projetada para atender às necessidades específicas de cada aluno. Nossa missão é conectar escolas, famílias e especialistas para criar um ambiente personalizado de monitoramento do aprendizado inclusivo.</p>
+    </div>
+
+    <div class="container col-10 mx-auto mt-3 text-center">
+        <div class="row g-3">
+            <div class="col-md">
+                <div class="p-3" style="background-color: #004e7a; border-radius: 15px;">
+                    <h4 style="color: #fecf5d;">Escolas</h4>
+                    <p style="color: white;">Gerencie o progresso dos alunos, identifique áreas de dificuldade e colabore com especialistas para oferecer suporte personalizado.</p>
+                </div>
+            </div>
+
+            <div class="col-md">
+                <div class="p-3" style="background-color: #004e7a; border-radius: 15px;">
+                    <h4 style="color: #fecf5d;">Famílias</h4>
+                    <p style="color: white;">Acompanhe o desenvolvimento do aluno, receba feedback dos professores e especialistas, e participe ativamente do processo educacional.</p>
+                </div>
+            </div>
+
+            <div class="col-md">
+                <div class="p-3" style="background-color: #004e7a; border-radius: 15px;">
+                    <h4 style="color: #fecf5d;">Especialistas</h4>
+                    <p style="color: white;">Colabore com escolas e famílias para fornecer avaliações, recomendações e estratégias de intervenção personalizadas para cada aluno.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            valida_sessao();
+        });
+
+        async function logoff() {
+            const retorno = await fetch('../src/controllers/usuario_logoff.php');
+            const resposta = await retorno.json();
+            if(resposta.status == 'ok'){
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>
