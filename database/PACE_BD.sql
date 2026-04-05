@@ -158,4 +158,3 @@ CREATE TABLE Avisos (
 
     INSERT INTO Administrador (id_usuario, nivel_permissao, id_instituicao)
     VALUES (1, '0', NULL);
-

@@ -3,7 +3,7 @@ async function valida_sessao() {
     const resposta = await retorno.json();
 
     if(resposta.status == 'nok'){
-        window.location.href = 'login.html'
+        window.location.href = 'visitante.html'
     } else {
         let usuario = resposta.data;
         if (Array.isArray(usuario)) {
