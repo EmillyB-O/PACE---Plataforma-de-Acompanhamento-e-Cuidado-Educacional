@@ -31,25 +31,22 @@ CREATE TABLE Administrador (
 
 CREATE TABLE Pedagogo (
     id_usuario INT PRIMARY KEY,
-    cndb VARCHAR(20),
+    cndb VARCHAR(20) UNIQUE,
     id_instituicao INT NOT NULL,
-    foto MEDIUMBLOB,
     especializacao VARCHAR(50),
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id),
     FOREIGN KEY (id_instituicao) REFERENCES Instituicao(id)
 );
 CREATE TABLE Profissional_Saude (
     id_usuario INT PRIMARY KEY,
-    crm VARCHAR(50),
-    crp VARCHAR(50),
-    foto MEDIUMBLOB,
+    crm VARCHAR(50) UNIQUE,
+    crp VARCHAR(50) UNIQUE,
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id)
 );
 CREATE TABLE Professor (
     id_usuario INT PRIMARY KEY,
-    cndb VARCHAR(20),
+    cndb VARCHAR(20) UNIQUE,
     id_instituicao INT NOT NULL,
-    foto MEDIUMBLOB,
     materia VARCHAR(50),
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id),
     FOREIGN KEY (id_instituicao) REFERENCES Instituicao(id)
@@ -57,7 +54,6 @@ CREATE TABLE Professor (
 CREATE TABLE Responsavel_Legal (
     id_usuario INT PRIMARY KEY,
     data_nasc DATE,
-    foto MEDIUMBLOB,
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id)
 );
 CREATE TABLE Turma (
@@ -83,7 +79,6 @@ CREATE TABLE Aluno (
     id_turma INT NOT NULL,
     id_instituicao INT NOT NULL,
     serie INT NOT NULL,
-    foto MEDIUMBLOB,
     status ENUM ('0','1','2') NOT NULL, -- 0: Matriculado, 1: Transferido, 2: Concluinte
     FOREIGN KEY (id_turma) REFERENCES Turma(id),
     FOREIGN KEY (id_instituicao) REFERENCES Instituicao(id)

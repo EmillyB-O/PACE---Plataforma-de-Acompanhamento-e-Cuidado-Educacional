@@ -7,17 +7,19 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function buscar(id) {
-    const retorno = await fetch('../src/controllers/turma/aluno_get.php?id='+id);
+    const retorno = await fetch('../src/controllers/aluno/aluno_get.php?id='+id);
     const resposta = await retorno.json();
     if(resposta.status == 'ok'){
         var registro = resposta.data[0];
 
         document.getElementById("nome").value = registro.nome;
         document.getElementById("serie").value = registro.serie;
-        document.getElementById("nascimento").value = registro.nascimento;
+        document.getElementById("nascimento").value = registro.data_nascimento;
         document.getElementById("matricula").value = registro.matricula;
-        document.getElementById("codigo_instituicao").value = registro.codigo_instituicao;
-        document.getElementById("codigo_turma").value = registro.codigo_turma;
+        let rb = document.querySelector('input[name="status"][value="'+registro.status+'"]');
+        if(rb) rb.checked = true;
+        document.getElementById("id_instituicao").value = registro.id_instituicao;
+        document.getElementById("id_turma").value = registro.id_turma;
         
     }else{
         alert("ERRO:" + resposta.mensagem);
@@ -34,8 +36,9 @@ async function alterar(){
     var serie = document.getElementById('serie').value;
     var nascimento = document.getElementById('nascimento').value;
     var matricula = document.getElementById('matricula').value;
-    var codigo_instituicao = document.getElementById('codigo_instituicao').value;
-    var codigo_turma = document.getElementById('codigo_turma').value;
+    var status = document.querySelector('input[name="status"]:checked') ? document.querySelector('input[name="status"]:checked').value : '0';
+    var id_instituicao = document.getElementById('id_instituicao').value;
+    var id_turma = document.getElementById('id_turma').value;
     
 
     const fd = new FormData(); 
@@ -43,10 +46,11 @@ async function alterar(){
     fd.append('serie', serie);
     fd.append('nascimento', nascimento);
     fd.append('matricula', matricula);
-    fd.append('codigo_instituicao', codigo_instituicao);
-    fd.append('codigo_turma', codigo_turma);
+    fd.append('status', status);
+    fd.append('id_instituicao', id_instituicao);
+    fd.append('id_turma', id_turma);
     
-    const retorno = await fetch('../src/controllers/turma/turma_alterar.php?id='+id,
+    const retorno = await fetch('../src/controllers/aluno/aluno_alterar.php?id='+id,
         {
             method: 'POST',
             body: fd
@@ -56,7 +60,7 @@ async function alterar(){
     const resposta = await retorno.json();
     if(resposta.status == 'ok'){
         alert('Sucesso: ' + resposta.mensagem);
-        window.location.href = 'instituicoes.html';
+        window.location.href = 'aluno.html';
     }else{
         alert('Erro: ' + resposta.mensagem);
     }

@@ -3,7 +3,9 @@ async function valida_sessao() {
     const resposta = await retorno.json();
 
     if(resposta.status == 'nok'){
-        window.location.href = 'visitante.html'
+        if (!window.location.pathname.endsWith('visitante.html')) {
+            window.location.href = 'visitante.html';
+        }
     } else {
         let usuario = resposta.data;
         if (Array.isArray(usuario)) {
@@ -11,16 +13,53 @@ async function valida_sessao() {
         }
 
         const cargo = String(usuario.cargo);
+        const nivel_permissao = usuario.nivel_permissao ? String(usuario.nivel_permissao) : null;
         const url = window.location.pathname;
 
-        // se o usuario for administrador, encaminhar da home para o painel
+        window.usuarioLogado = usuario;
+
+        // Redirect rules
         if (cargo === '1' && (url.endsWith('index.html') || url.endsWith('/'))) {
             window.location.href = 'painel_admin.html';
+            return;
         }
-        
-        // protecao caso o usuario nao for adm
-        else if (cargo !== '1' && url.endsWith('painel_admin.html')) {
+
+        if (cargo === '1') {
+            if (nivel_permissao === '0') {
+                if (url.includes('turma') || url.includes('aluno')) {
+                    window.location.href = 'painel_admin.html';
+                    return;
+                }
+            } else if (nivel_permissao === '1') {
+                if (url.includes('instituicao')) {
+                    window.location.href = 'painel_admin.html';
+                    return;
+                }
+            }
+        } else if (url.endsWith('painel_admin.html')) {
             window.location.href = 'index.html';
+            return;
+        }
+
+        // Exibir e esconder itens com base no Nível
+        const hideTabs = () => {
+            const links = document.querySelectorAll('.nav-link');
+            links.forEach(link => {
+                const text = link.innerText.trim();
+                if (cargo === '1') {
+                    if (nivel_permissao === '0') {
+                        if (text === 'Turmas' || text === 'Alunos') link.parentElement.style.display = 'none';
+                    } else if (nivel_permissao === '1') {
+                        if (text === 'Instituições') link.parentElement.style.display = 'none';
+                    }
+                }
+            });
+        };
+
+        if (document.readyState === 'loading') {
+            document.addEventListener("DOMContentLoaded", hideTabs);
+        } else {
+            hideTabs();
         }
     }
 }

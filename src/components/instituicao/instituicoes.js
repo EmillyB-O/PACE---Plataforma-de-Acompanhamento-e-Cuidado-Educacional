@@ -46,6 +46,7 @@ function preencherTabela(tabela){
                     <th> Nome </th>
                     <th> Endereço </th>
                     <th> Código </th>
+                    <th> Ações </th>
                 </tr>
             </thead>
             <tbody>`;

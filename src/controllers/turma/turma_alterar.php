@@ -13,12 +13,12 @@
         $serie   = $_POST['serie'];
         $ano     = $_POST['ano']; 
         $quantidade     = $_POST['quantidade'];
-        $codigo     = $_POST['codigo'];
+        $id_instituicao     = $_POST['id_instituicao'];
 
     try {
         $conexao->begin_transaction();
         $stmt = $conexao->prepare("UPDATE Turma SET nome = ?, serie = ?, ano = ?, qntd_alunos = ?, id_instituicao = ? WHERE id = ?");
-        $stmt->bind_param("siiiii", $nome, $serie, $ano, $quantidade, $codigo, $_GET['id']);
+        $stmt->bind_param("siiiii", $nome, $serie, $ano, $quantidade, $id_instituicao, $_GET['id']);
         $stmt->execute();
         $conexao->commit();
 

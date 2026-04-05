@@ -7,20 +7,22 @@ async function novo() {
     var serie = document.getElementById('serie').value;
     var nascimento = document.getElementById('nascimento').value;
     var matricula = document.getElementById('matricula').value;
-    var codigo_instituicao = document.getElementById('codigo_instituicao').value;
-    var codigo_turma = document.getElementById('codigo_turma').value;
+    var status = document.querySelector('input[name="status"]:checked') ? document.querySelector('input[name="status"]:checked').value : '0';
+    var id_instituicao = document.getElementById('id_instituicao').value;
+    var id_turma = document.getElementById('id_turma').value;
     
     const fd = new FormData();
     fd.append('nome', nome);
     fd.append('serie', serie);
     fd.append('nascimento', nascimento);
     fd.append('matricula', matricula);
-    fd.append('codigo_instituicao', codigo_instituicao);
-    fd.append('codigo_turma', codigo_turma);;
+    fd.append('status', status);
+    fd.append('id_instituicao', id_instituicao);
+    fd.append('id_turma', id_turma);
 
     //isso serve para identificar se a transacao deu certo ou nn, pois para enviar os dados da instituicao para o banco é necessario uma transacao 
     try {
-        const retorno = await fetch('../src/controllers/turma/turma_novo.php',
+        const retorno = await fetch('../src/controllers/aluno/aluno_novo.php',
             {
                 method: 'POST',
                 body: fd
@@ -30,7 +32,7 @@ async function novo() {
         const resposta = await retorno.json();
         if(resposta.status == 'ok'){
             alert('Sucesso: ' + resposta.mensagem);
-            window.location.href = 'instituicoes.html'; // direciona pra lista apos criar
+            window.location.href = 'aluno.html'; // direciona pra lista apos criar
         }else{
             alert('Erro: ' + resposta.mensagem);
         }

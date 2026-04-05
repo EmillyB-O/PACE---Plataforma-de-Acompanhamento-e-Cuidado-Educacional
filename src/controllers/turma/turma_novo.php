@@ -11,12 +11,12 @@ $nome = $_POST['nome'];
 $serie = $_POST['serie'];
 $ano = $_POST['ano'];
 $quantidade = $_POST['quantidade'];
-$codigo = $_POST['codigo'];
+$id_instituicao = $_POST['id_instituicao'];
 
 try {
     $conexao->begin_transaction();
     $stmt = $conexao->prepare('INSERT INTO Turma (nome, serie, ano, qntd_alunos, id_instituicao) VALUES (?,?,?,?,?)');
-    $stmt->bind_param('siiii', $nome, $serie, $ano, $quantidade, $codigo);
+    $stmt->bind_param('siiii', $nome, $serie, $ano, $quantidade, $id_instituicao);
     $stmt->execute();
     $conexao->commit();
 

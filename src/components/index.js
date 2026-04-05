@@ -1,5 +1,5 @@
-document.addEventListener("DOMContentLoaded", () => {
-    valida_sessao();
+document.addEventListener("DOMContentLoaded", async () => {
+    await valida_sessao();
     buscar();
 });
 

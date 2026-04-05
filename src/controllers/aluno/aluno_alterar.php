@@ -13,13 +13,14 @@ if (isset($_GET['id'])) {
     $nascimento = $_POST['nascimento'];
     $serie = $_POST['serie'];
     $matricula = $_POST['matricula'];
+    $status = $_POST['status'];
     $id_instituicao = $_POST['id_instituicao'];
     $id_turma = $_POST['id_turma'];
 
     try {
         $conexao->begin_transaction();
-        $stmt = $conexao->prepare("UPDATE Aluno SET nome = ?, data_nascimento = ?, matricula = ?, id_turma = ?, id_instituicao = ?, serie = ? WHERE id = ?");
-        $stmt->bind_param("ssiiiii", $nome, $nascimento, $matricula, $id_turma, $id_instituicao, $serie, $_GET['id']);
+        $stmt = $conexao->prepare("UPDATE Aluno SET nome = ?, data_nascimento = ?, matricula = ?, id_turma = ?, id_instituicao = ?, serie = ?, status = ? WHERE id = ?");
+        $stmt->bind_param("ssiiiisi", $nome, $nascimento, $matricula, $id_turma, $id_instituicao, $serie, $status, $_GET['id']);
         $stmt->execute();
         $conexao->commit();
 

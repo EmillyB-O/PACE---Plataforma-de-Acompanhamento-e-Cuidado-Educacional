@@ -14,8 +14,8 @@ async function buscar(id) {
         document.getElementById("nome").value = registro.nome;
         document.getElementById("serie").value = registro.serie;
         document.getElementById("ano").value = registro.ano;
-        document.getElementById("quantidade").value = registro.$quantidade;
-        document.getElementById("codigo").value = registro.codigo;
+        document.getElementById("quantidade").value = registro.qntd_alunos;
+        document.getElementById("id_instituicao").value = registro.id_instituicao;
         
     }else{
         alert("ERRO:" + resposta.mensagem);
@@ -32,7 +32,7 @@ async function alterar(){
     var serie = document.getElementById('serie').value;
     var ano = document.getElementById('ano').value;
     var quantidade = document.getElementById('quantidade').value;
-    var codigo = document.getElementById('codigo').value;
+    var id_instituicao = document.getElementById('id_instituicao').value;
     
 
     const fd = new FormData();
@@ -40,7 +40,7 @@ async function alterar(){
     fd.append('serie', serie);
     fd.append('ano', ano);
     fd.append('quantidade', quantidade);
-    fd.append('codigo', codigo);
+    fd.append('id_instituicao', id_instituicao);
     
     const retorno = await fetch('../src/controllers/turma/turma_alterar.php?id='+id,
         {
@@ -52,7 +52,7 @@ async function alterar(){
     const resposta = await retorno.json();
     if(resposta.status == 'ok'){
         alert('Sucesso: ' + resposta.mensagem);
-        window.location.href = 'instituicoes.html';
+        window.location.href = 'turma.html';
     }else{
         alert('Erro: ' + resposta.mensagem);
     }

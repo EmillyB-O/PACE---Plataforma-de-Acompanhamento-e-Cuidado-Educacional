@@ -80,32 +80,39 @@
                         <input type="date" class="form-control" id="nascimento">
                     </div>
                 </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="matricula" class="form-label">Número de Matrícula</label>
+                        <input type="number" class="form-control" id="matricula">
+                    </div>
+                </div>
+
                 <div class="mb-3">
-                    <label class="form-label">matricula</label>  
+                    <label class="form-label">Status da Matrícula</label>  
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="matriculado" id="radio-matriculado" value="matriculado">
+                        <input class="form-check-input" type="radio" name="status" id="radio-matriculado" value="0">
                         <label class="form-check-label" for="radio-matriculado">Matriculado</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="transferido" id="transferido" value="transferido">
+                        <input class="form-check-input" type="radio" name="status" id="radio-transferido" value="1">
                         <label class="form-check-label" for="radio-transferido">Transferido</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="concluinte" id="concluinte" value="concluinte">
+                        <input class="form-check-input" type="radio" name="status" id="radio-concluinte" value="2">
                         <label class="form-check-label" for="radio-concluinte">Concluinte</label>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="codigo_instituição" class="form-label">Id da instituicao</label>
-                        <input type="number" class="form-control" id="codigo_instituição">
+                        <label for="id_instituicao" class="form-label">ID da Instituição</label>
+                        <input type="number" class="form-control" id="id_instituicao">
                     </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label for="codigo_turma" class="form-label">Id da turma</label>
-                        <input type="number" class="form-control" id="codigo_turma">
+                        <label for="id_turma" class="form-label">ID da Turma</label>
+                        <input type="number" class="form-control" id="id_turma">
                     </div>
                 </div>
             </div>
@@ -113,7 +120,7 @@
     </div>
 
     <script src="../src/components/valida_sessao.js"></script>
-    <script src="../src/components/instituicao/instituicao_alterar.js"></script>
+    <script src="../src/components/aluno/aluno_alterar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>

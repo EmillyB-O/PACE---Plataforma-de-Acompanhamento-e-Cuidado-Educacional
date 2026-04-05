@@ -7,14 +7,14 @@ async function novo() {
     var serie = document.getElementById('serie').value;
     var ano = document.getElementById('ano').value;
     var quantidade = document.getElementById('quantidade').value;
-    var codigo = document.getElementById('codigo').value;
+    var id_instituicao = document.getElementById('id_instituicao').value;
     
     const fd = new FormData();
     fd.append('nome', nome);
     fd.append('serie', serie);
     fd.append('ano', ano);
     fd.append('quantidade', quantidade);
-    fd.append('codigo', codigo);
+    fd.append('id_instituicao', id_instituicao);
 
     //isso serve para identificar se a transacao deu certo ou nn, pois para enviar os dados da instituicao para o banco é necessario uma transacao 
     try {
@@ -28,7 +28,7 @@ async function novo() {
         const resposta = await retorno.json();
         if(resposta.status == 'ok'){
             alert('Sucesso: ' + resposta.mensagem);
-            window.location.href = 'instituicoes.html'; // direciona pra lista apos criar
+            window.location.href = 'turma.html'; // direciona pra lista apos criar
         }else{
             alert('Erro: ' + resposta.mensagem);
         }
