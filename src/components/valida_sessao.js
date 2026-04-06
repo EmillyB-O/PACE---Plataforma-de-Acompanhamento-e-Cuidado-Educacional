@@ -41,8 +41,8 @@ async function valida_sessao() {
             return;
         }
 
-        // Exibir e esconder itens com base no Nível
-        const hideTabs = () => {
+        // Configurar Navbar baseada no Nível
+        const configureNavbar = () => {
             const links = document.querySelectorAll('.nav-link');
             links.forEach(link => {
                 const text = link.innerText.trim();
@@ -54,12 +54,22 @@ async function valida_sessao() {
                     }
                 }
             });
+
+        // Mensagem de "Bem-vindo!!!"
+            const navRight = document.querySelector('.navbar-nav.ms-auto');
+            if (navRight && !document.getElementById('msg-boas-vindas')) {
+                const li = document.createElement('li');
+                li.id = 'msg-boas-vindas';
+                li.className = 'nav-item d-flex align-items-center me-3 text-light';
+                li.innerHTML = `<strong>Bem-vindo, ${usuario.nome}!</strong>`;
+                navRight.insertBefore(li, navRight.firstChild);
+            }
         };
 
         if (document.readyState === 'loading') {
-            document.addEventListener("DOMContentLoaded", hideTabs);
+            document.addEventListener("DOMContentLoaded", configureNavbar);
         } else {
-            hideTabs();
+            configureNavbar();
         }
     }
 }
