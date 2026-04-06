@@ -8,12 +8,20 @@
         'data'      => []
     ];
 
-    $nome       = $_POST['nome'];
-    $email      = $_POST['email'];
-    $cpf        = $_POST['cpf'];
-    $senha      = password_hash($_POST['senha'], PASSWORD_DEFAULT);
-    $cargo      = $_POST['cargo'];
-    $telefone   = $_POST['telefone'];
+    $nome       = trim($_POST['nome']);
+    $email      = trim($_POST['email']);
+    $cpf        = trim($_POST['cpf']);
+    $senhaInput = trim($_POST['senha']);
+    $cargo      = trim($_POST['cargo']);
+    $telefone   = trim($_POST['telefone']);
+
+    if (empty($nome) || empty($email) || empty($cpf) || empty($senhaInput) || empty($cargo) || empty($telefone)) {
+        header('Content-type:application/json;charset:utf-8');
+        echo json_encode(['status' => 'nok', 'mensagem' => 'Todos os campos básicos (Nome, Email, CPF, Senha, Telefone e Cargo) devem ser preenchidos.', 'data' => []]);
+        exit;
+    }
+
+    $senha = password_hash($senhaInput, PASSWORD_DEFAULT);
 
     if (isset($_SESSION['usuario'])) {
         $userLogado = $_SESSION['usuario'];
@@ -67,7 +75,12 @@
 
     // validacao de duplicidade de crm, crp ou cndb
     if ($cargo === '2' || $cargo === '4') {
-        $cndb = $_POST['cndb'];
+        $cndb = trim($_POST['cndb']);
+        if (empty($cndb)) {
+            header('Content-type:application/json;charset:utf-8');
+            echo json_encode(['status' => 'nok', 'mensagem' => 'O campo CNDB é obrigatório para Pedagogo e Professor.', 'data' => []]);
+            exit;
+        }
         $stmtCheck = $conexao->prepare("SELECT id_usuario FROM Pedagogo WHERE cndb = ? UNION SELECT id_usuario FROM Professor WHERE cndb = ?");
         $stmtCheck->bind_param("ss", $cndb, $cndb);
         $stmtCheck->execute();
@@ -84,7 +97,15 @@
         }
         $stmtCheck->close();
     } elseif ($cargo === '3') {
-        $crm = $_POST['crm'];
+        $crm = trim($_POST['crm']);
+        $crp = trim($_POST['crp']);
+
+        if (empty($crm) && empty($crp)) {
+            header('Content-type:application/json;charset:utf-8');
+            echo json_encode(['status' => 'nok', 'mensagem' => 'Pelo menos um dos campos (CRM ou CRP) deve ser preenchido para Profissional da Saúde.', 'data' => []]);
+            exit;
+        }
+
         if (!empty($crm)) {
             $stmtCheck = $conexao->prepare("SELECT id_usuario FROM Profissional_Saude WHERE crm = ?");
             $stmtCheck->bind_param("s", $crm);
@@ -103,7 +124,6 @@
             $stmtCheck->close();
         }
 
-        $crp = $_POST['crp'];
         if (!empty($crp)) {
             $stmtCheck = $conexao->prepare("SELECT id_usuario FROM Profissional_Saude WHERE crp = ?");
             $stmtCheck->bind_param("s", $crp);
@@ -170,12 +190,30 @@
             $stmt->execute();
 
         }elseif ($cargo === '2') { //pedagogo
-            $cndb = $_POST['cndb'];
-            $instituicao = $_POST['instituicao'];
-            $especializacao = $_POST['especializacao'];
+            $cndb = trim($_POST['cndb']);
+            $instituicao_codigo = trim($_POST['instituicao']);
+            $especializacao = !empty($_POST['especializacao']) ? trim($_POST['especializacao']) : null;
+
+            if (empty($instituicao_codigo)) {
+                $conexao->rollback();
+                echo json_encode(['status'=>'nok', 'mensagem'=>'O Código da instituição é obrigatório para Pedagogos.', 'data'=>[]]);
+                exit;
+            }
+            $stmtCheckInst = $conexao->prepare("SELECT id FROM Instituicao WHERE codigo = ?");
+            $stmtCheckInst->bind_param("i", $instituicao_codigo);
+            $stmtCheckInst->execute();
+            $resultCheckInst = $stmtCheckInst->get_result();
+            if ($resultCheckInst->num_rows == 0) {
+                $conexao->rollback();
+                echo json_encode(['status'=>'nok', 'mensagem'=>'A instituição informada não existe.', 'data'=>[]]);
+                exit;
+            }
+            $row = $resultCheckInst->fetch_assoc();
+            $instituicao_id = $row['id'];
+            $stmtCheckInst->close();
 
             $stmt = $conexao->prepare('INSERT INTO Pedagogo (id_usuario, cndb, id_instituicao, especializacao) VALUES (?, ?, ?, ?)');
-            $stmt->bind_param('isis', $idUsuarioGerado, $cndb, $instituicao, $especializacao);
+            $stmt->bind_param('isis', $idUsuarioGerado, $cndb, $instituicao_id, $especializacao);
             $stmt->execute();
 
         }elseif ($cargo === '3') { //profissional de saude
@@ -187,12 +225,30 @@
             $stmt->execute();
 
         }elseif ($cargo === '4') { //professor
-            $cndb = $_POST['cndb'];
-            $instituicao = $_POST['instituicao'];
-            $materia = $_POST['materia'];
+            $cndb = trim($_POST['cndb']);
+            $instituicao_codigo = trim($_POST['instituicao']);
+            $materia = !empty($_POST['materia']) ? trim($_POST['materia']) : null;
+
+            if (empty($instituicao_codigo)) {
+                $conexao->rollback();
+                echo json_encode(['status'=>'nok', 'mensagem'=>'O Código da instituição é obrigatório para Professores.', 'data'=>[]]);
+                exit;
+            }
+            $stmtCheckInst = $conexao->prepare("SELECT id FROM Instituicao WHERE codigo = ?");
+            $stmtCheckInst->bind_param("i", $instituicao_codigo);
+            $stmtCheckInst->execute();
+            $resultCheckInst = $stmtCheckInst->get_result();
+            if ($resultCheckInst->num_rows == 0) {
+                $conexao->rollback();
+                echo json_encode(['status'=>'nok', 'mensagem'=>'A instituição informada não existe.', 'data'=>[]]);
+                exit;
+            }
+            $row = $resultCheckInst->fetch_assoc();
+            $instituicao_id = $row['id'];
+            $stmtCheckInst->close();
 
             $stmt = $conexao->prepare('INSERT INTO Professor (id_usuario, cndb, id_instituicao, materia) VALUES (?, ?, ?, ?)');
-            $stmt->bind_param('isis', $idUsuarioGerado, $cndb, $instituicao, $materia);
+            $stmt->bind_param('isis', $idUsuarioGerado, $cndb, $instituicao_id, $materia);
             $stmt->execute();
         
         }elseif ($cargo === '5') { //responsavel legal

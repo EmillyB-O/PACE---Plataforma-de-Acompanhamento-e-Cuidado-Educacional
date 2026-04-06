@@ -31,12 +31,12 @@ seletor.addEventListener('change', function() {
 });
 
 async function novo() {
-    var nome = document.getElementById('nome').value;
-    var email = document.getElementById('email').value;
-    var cpf = document.getElementById('cpf').value;
-    var senha = document.getElementById('senha').value;
-    var cargo = document.getElementById('cargo').value;
-    var telefone = document.getElementById('telefone').value;
+    var nome = document.getElementById('nome').value.trim();
+    var email = document.getElementById('email').value.trim();
+    var cpf = document.getElementById('cpf').value.trim();
+    var senha = document.getElementById('senha').value.trim();
+    var cargo = document.getElementById('cargo').value.trim();
+    var telefone = document.getElementById('telefone').value.trim();
     
     if (!nome || !email || !cpf || !senha || !telefone || !cargo) {
         alert("Os campos de Nome, Email, CPF, Senha, Telefone e Cargo são obrigatórios.");
@@ -55,7 +55,7 @@ async function novo() {
         fd.append('nivel_permissao', document.getElementById('nivel_permissao').value);
         //o adm vem com o nivel de permissao para adm instituicionais, entretanto ele só é linkado com a instituição depois de alguem atribuir ele à ela
     }else if(cargo === '2'){//pedagogo
-        var cndb = document.getElementById('cndb').value;
+        var cndb = document.getElementById('cndb').value.trim();
         if (!cndb) {
             alert("O campo CNDB é obrigatório para Pedagogo.");
             return;
@@ -64,17 +64,17 @@ async function novo() {
         fd.append('instituicao', document.getElementById('instituicao').value);
         fd.append('especializacao', document.getElementById('especializacao').value);
     }else if(cargo === '3'){//profissional da saude
-        var crm = document.getElementById('crm').value;
-        var crp = document.getElementById('crp').value;
-        if (!crm || !crp) {
-            alert("Os campos CRM e CRP são obrigatórios para Profissional da Saúde.");
+        var crm = document.getElementById('crm').value.trim();
+        var crp = document.getElementById('crp').value.trim();
+        if (!crm && !crp) {
+            alert("Pelo menos um dos campos (CRM ou CRP) deve ser preenchido para Profissional da Saúde.");
             return;
         }
         fd.append('crm', crm);
         fd.append('crp', crp);
 
     }else if(cargo === '4'){//professor
-        var cndb = document.getElementById('cndb').value;
+        var cndb = document.getElementById('cndb').value.trim();
         if (!cndb) {
             alert("O campo CNDB é obrigatório para Professor.");
             return;

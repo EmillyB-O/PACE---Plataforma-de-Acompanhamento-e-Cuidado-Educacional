@@ -9,12 +9,20 @@ $retorno = [
 ];
 
 if (isset($_GET['id'])) {
-    $nome = $_POST['nome'];
-    $email = $_POST['email'];
-    $cpf = $_POST['cpf'];
-    $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
-    $cargo = $_POST['cargo'];
-    $telefone = $_POST['telefone'];
+    $nome = trim($_POST['nome']);
+    $email = trim($_POST['email']);
+    $cpf = trim($_POST['cpf']);
+    $senhaInput = trim($_POST['senha']);
+    $cargo = trim($_POST['cargo']);
+    $telefone = trim($_POST['telefone']);
+
+    if (empty($nome) || empty($email) || empty($cpf) || empty($senhaInput) || empty($cargo) || empty($telefone)) {
+        header('Content-type:application/json;charset:utf-8');
+        echo json_encode(['status' => 'nok', 'mensagem' => 'Todos os campos básicos (Nome, Email, CPF, Senha, Telefone e Cargo) devem ser preenchidos.', 'data' => []]);
+        exit;
+    }
+
+    $senha = password_hash($senhaInput, PASSWORD_DEFAULT);
 
     if (isset($_SESSION['usuario'])) {
         $userLogado = $_SESSION['usuario'];
@@ -69,7 +77,12 @@ if (isset($_GET['id'])) {
 
     // validacao de duplicidade de crm, crp ou cndb (ignorando o próprio usuario)
     if ($cargo === '2' || $cargo === '4') {
-        $cndb = $_POST['cndb'];
+        $cndb = trim($_POST['cndb']);
+        if (empty($cndb)) {
+            header('Content-type:application/json;charset:utf-8');
+            echo json_encode(['status' => 'nok', 'mensagem' => 'O campo CNDB é obrigatório para Pedagogo e Professor.', 'data' => []]);
+            exit;
+        }
         $idEdit = $_GET['id'];
         $stmtCheck = $conexao->prepare("SELECT id_usuario FROM Pedagogo WHERE cndb = ? AND id_usuario != ? UNION SELECT id_usuario FROM Professor WHERE cndb = ? AND id_usuario != ?");
         $stmtCheck->bind_param("sisi", $cndb, $idEdit, $cndb, $idEdit);
@@ -88,7 +101,15 @@ if (isset($_GET['id'])) {
         $stmtCheck->close();
     } elseif ($cargo === '3') {
         $idEdit = $_GET['id'];
-        $crm = $_POST['crm'];
+        $crm = trim($_POST['crm']);
+        $crp = trim($_POST['crp']);
+
+        if (empty($crm) && empty($crp)) {
+            header('Content-type:application/json;charset:utf-8');
+            echo json_encode(['status' => 'nok', 'mensagem' => 'Pelo menos um dos campos (CRM ou CRP) deve ser preenchido para Profissional da Saúde.', 'data' => []]);
+            exit;
+        }
+
         if (!empty($crm)) {
             $stmtCheck = $conexao->prepare("SELECT id_usuario FROM Profissional_Saude WHERE crm = ? AND id_usuario != ?");
             $stmtCheck->bind_param("si", $crm, $idEdit);
@@ -107,7 +128,6 @@ if (isset($_GET['id'])) {
             $stmtCheck->close();
         }
 
-        $crp = $_POST['crp'];
         if (!empty($crp)) {
             $stmtCheck = $conexao->prepare("SELECT id_usuario FROM Profissional_Saude WHERE crp = ? AND id_usuario != ?");
             $stmtCheck->bind_param("si", $crp, $idEdit);
