@@ -146,17 +146,20 @@
             if ($nivel_permissao == '1') {
                 if (empty($instituicao_admin)) {
                     $conexao->rollback();
-                    echo json_encode(['status'=>'nok', 'mensagem'=>'O ID da instituição é obrigatório para Administradores Institucionais.', 'data'=>[]]);
+                    echo json_encode(['status'=>'nok', 'mensagem'=>'O Código da instituição é obrigatório para Administradores Institucionais.', 'data'=>[]]);
                     exit;
                 }
-                $stmtCheckInst = $conexao->prepare("SELECT id FROM Instituicao WHERE id = ?");
+                $stmtCheckInst = $conexao->prepare("SELECT id FROM Instituicao WHERE codigo = ?");
                 $stmtCheckInst->bind_param("i", $instituicao_admin);
                 $stmtCheckInst->execute();
-                if ($stmtCheckInst->get_result()->num_rows == 0) {
+                $resultCheckInst = $stmtCheckInst->get_result();
+                if ($resultCheckInst->num_rows == 0) {
                     $conexao->rollback();
                     echo json_encode(['status'=>'nok', 'mensagem'=>'A instituição informada não existe.', 'data'=>[]]);
                     exit;
                 }
+                $row = $resultCheckInst->fetch_assoc();
+                $instituicao_admin = $row['id'];
                 $stmtCheckInst->close();
             } else {
                 $instituicao_admin = null;
