@@ -13,6 +13,27 @@ $codigo = $_POST['codigo'];
 
 try {
     $conexao->begin_transaction();
+
+    // Verifica se já existe uma instituição com o mesmo nome e código
+    $stmtVerifica = $conexao->prepare('SELECT id FROM Instituicao WHERE nome = ? AND codigo = ?');
+    $stmtVerifica->bind_param('si', $nome, $codigo);
+    $stmtVerifica->execute();
+    $resultadoVerifica = $stmtVerifica->get_result();
+
+    if ($resultadoVerifica->num_rows > 0) {
+        $stmtVerifica->close();
+        $retorno = [
+            'status' => 'nok',
+            'mensagem' => 'Já existe uma instituição com esse Nome e Código informados.',
+            'data' => []
+        ];
+        $conexao->rollback();
+        header('Content-type:application/json;charset:utf-8');
+        echo json_encode($retorno);
+        exit;
+    }
+    $stmtVerifica->close();
+
     $status = 1; // 1: Ativo
     $stmt = $conexao->prepare('INSERT INTO Instituicao (nome, endereco, codigo) VALUES (?,?,?)');
     $stmt->bind_param('ssi', $nome, $endereco, $codigo);

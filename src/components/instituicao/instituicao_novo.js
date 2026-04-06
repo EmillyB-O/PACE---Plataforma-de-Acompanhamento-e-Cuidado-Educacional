@@ -7,6 +7,11 @@ async function novo() {
     var endereco = document.getElementById('endereco').value;
     var codigo = document.getElementById('codigo').value;
     
+    if (!nome || !endereco || !codigo) {
+        alert("Os campos de Nome, Endereço e Código são obrigatórios.");
+        return;
+    }
+
     const fd = new FormData();
     fd.append('nome', nome);
     fd.append('endereco', endereco);

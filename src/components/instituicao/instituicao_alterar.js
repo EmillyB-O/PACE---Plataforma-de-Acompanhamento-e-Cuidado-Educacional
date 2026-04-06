@@ -30,6 +30,11 @@ async function alterar(){
     var codigo = document.getElementById('codigo').value;
     var id = document.getElementById('id').value;
 
+    if (!nome || !endereco || !codigo) {
+        alert("Os campos de Nome, Endereço e Código são obrigatórios.");
+        return;
+    }
+
     const fd = new FormData();
     fd.append('nome', nome);
     fd.append('endereco', endereco);
