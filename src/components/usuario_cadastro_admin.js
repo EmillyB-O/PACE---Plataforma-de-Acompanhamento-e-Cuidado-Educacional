@@ -89,6 +89,11 @@ async function novo() {
     var cargo = document.getElementById('cargo').value;
     var telefone = document.getElementById('telefone').value.replace(/\D/g, '');
 
+    if (!nome || !email || !cpf || !senha || !telefone || !cargo) {
+        alert("Os campos de Nome, Email, CPF, Senha, Telefone e Cargo são obrigatórios.");
+        return;
+    }
+
     const fd = new FormData();
     fd.append('nome', nome);
     fd.append('email', email);
@@ -102,15 +107,31 @@ async function novo() {
         fd.append('instituicao_admin', document.getElementById('instituicao_admin').value);
         //o adm vem com o nivel de permissao para adm instituicionais, entretanto ele só é linkado com a instituição depois de alguem atribuir ele à ela
     } else if (cargo === '2') {//pedagogo
-        fd.append('cndb', document.getElementById('cndb').value);
+        var cndb = document.getElementById('cndb').value;
+        if (!cndb) {
+            alert("O campo CNDB é obrigatório para Pedagogo.");
+            return;
+        }
+        fd.append('cndb', cndb);
         fd.append('instituicao', document.getElementById('instituicao').value);
         fd.append('especializacao', document.getElementById('especializacao').value);
     } else if (cargo === '3') {//profissional da saude
-        fd.append('crm', document.getElementById('crm').value);
-        fd.append('crp', document.getElementById('crp').value);
+        var crm = document.getElementById('crm').value;
+        var crp = document.getElementById('crp').value;
+        if (!crm || !crp) {
+            alert("Os campos CRM e CRP são obrigatórios para Profissional da Saúde.");
+            return;
+        }
+        fd.append('crm', crm);
+        fd.append('crp', crp);
 
     } else if (cargo === '4') {//professor
-        fd.append('cndb', document.getElementById('cndb').value);
+        var cndb = document.getElementById('cndb').value;
+        if (!cndb) {
+            alert("O campo CNDB é obrigatório para Professor.");
+            return;
+        }
+        fd.append('cndb', cndb);
         fd.append('instituicao', document.getElementById('instituicao').value);
         fd.append('materia', document.getElementById('materia').value);
     } else if (cargo === '5') {//responsavel legal

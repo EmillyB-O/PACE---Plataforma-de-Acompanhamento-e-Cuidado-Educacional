@@ -117,6 +117,11 @@ async function alterar() {
     var telefone = document.getElementById('telefone').value;
     const id = document.getElementById('id').value;
 
+    if (!nome || !email || !cpf || !senha || !telefone || !cargo) {
+        alert("Os campos de Nome, Email, CPF, Senha, Telefone e Cargo são obrigatórios.");
+        return;
+    }
+
     //pega os valores do front e prepara para enviar pro back
 
     const fd = new FormData(); //faz isso com formdata
@@ -132,15 +137,31 @@ async function alterar() {
         fd.append('nivel_permissao', document.getElementById('nivel_permissao').value);
         fd.append('instituicao_admin', document.getElementById('instituicao_admin').value);
     } else if (cargo === '2') {//pedagogo
-        fd.append('cndb', document.getElementById('cndb').value);
+        var cndb = document.getElementById('cndb').value;
+        if (!cndb) {
+            alert("O campo CNDB é obrigatório para Pedagogo.");
+            return;
+        }
+        fd.append('cndb', cndb);
         fd.append('instituicao', document.getElementById('instituicao').value);
         fd.append('especializacao', document.getElementById('especializacao').value);
     } else if (cargo === '3') {//profissional da saude
-        fd.append('crm', document.getElementById('crm').value);
-        fd.append('crp', document.getElementById('crp').value);
+        var crm = document.getElementById('crm').value;
+        var crp = document.getElementById('crp').value;
+        if (!crm || !crp) {
+            alert("Os campos CRM e CRP são obrigatórios para Profissional da Saúde.");
+            return;
+        }
+        fd.append('crm', crm);
+        fd.append('crp', crp);
 
     } else if (cargo === '4') {//professor
-        fd.append('cndb', document.getElementById('cndb').value);
+        var cndb = document.getElementById('cndb').value;
+        if (!cndb) {
+            alert("O campo CNDB é obrigatório para Professor.");
+            return;
+        }
+        fd.append('cndb', cndb);
         fd.append('instituicao', document.getElementById('instituicao').value);
         fd.append('materia', document.getElementById('materia').value);
     } else if (cargo === '5') {//responsavel legal

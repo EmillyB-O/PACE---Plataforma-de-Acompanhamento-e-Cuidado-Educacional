@@ -17,7 +17,18 @@ if ($resultado->num_rows > 0) {
     $linha = $resultado->fetch_assoc();
 
     if (password_verify($_POST['senha'], $linha['senha'])) {
-        if ($linha['status'] !== '1') {
+        if ($linha['status'] === '3') {
+            $retorno = [
+                'status' => 'nok',
+                'mensagem' => 'Seu cadastro é inválido ou foi banido do sistema. Contate a instituição para saber mais.',
+                'data' => []
+            ];
+            $stmt->close();
+            $conexao->close();
+            header('Content-type:application/json;charset:utf-8');
+            echo json_encode($retorno);
+            exit;
+        } else if ($linha['status'] !== '1') {
             $retorno = [
                 'status' => 'nok',
                 'mensagem' => 'Acesso negado. Usuário inativo ou aguardando validação.',

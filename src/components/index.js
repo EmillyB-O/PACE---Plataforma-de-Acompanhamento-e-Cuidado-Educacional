@@ -37,6 +37,17 @@ async function aprovar(id) {
     }
 }
 
+async function recusar(id) {
+    const retorno = await fetch('../src/controllers/usuario_recusar.php?id='+id);
+    const resposta = await retorno.json();
+    if(resposta.status == 'ok'){
+        alert(resposta.mensagem);
+        window.location.reload();
+    }else{
+        alert(resposta.mensagem);
+    }
+}
+
 //TODA A FUNCAO preencherTabela TEM QUE SER ADAPTADA PARA OS USUARIOS ESPECIAIS
 function preencherTabela(tabela){
     var html = `
@@ -69,7 +80,10 @@ function preencherTabela(tabela){
         let descStatus = tabela[i].status == 1 ? 'Ativo' : 'Inativo';
         if (tabela[i].status == '2') {
             btns += ` <a href='#' onclick='aprovar(${tabela[i].id})' class="btn btn-sm btn-success">Aprovar</a>`;
+            btns += ` <a href='#' onclick='recusar(${tabela[i].id})' class="btn btn-sm btn-warning">Recusar</a>`;
             descStatus = '<span class="text-warning fw-bold">Aguardando Validação</span>';
+        } else if (tabela[i].status == '3') {
+            descStatus = '<span class="text-danger fw-bold">Inválido / Recusado</span>';
         }
 
         html += `
