@@ -13,17 +13,22 @@ if (isset($_GET['id'])) {
     $email = trim($_POST['email']);
     $cpf = trim($_POST['cpf']);
     $senhaInput = trim($_POST['senha']);
-    $cargo = trim($_POST['cargo']);
     $telefone = trim($_POST['telefone']);
 
-    if (empty($nome) || empty($email) || empty($cpf) || empty($senhaInput) || empty($cargo) || empty($telefone)) {
+    if (empty($nome) || empty($email) || empty($cpf) || empty($senhaInput) || empty($telefone)) {
         header('Content-type:application/json;charset:utf-8');
         echo json_encode(['status' => 'nok', 'mensagem' => 'Todos os campos básicos (Nome, Email, CPF, Senha, Telefone e Cargo) devem ser preenchidos.', 'data' => []]);
         exit;
     }
 
     $senha = password_hash($senhaInput, PASSWORD_DEFAULT);
-
+    $id = $_GET['id'];
+    $stmtCargo = $conexao->prepare("SELECT cargo FROM Usuario WHERE id = ?");
+    $stmtCargo->bind_param("i", $id);
+    $stmtCargo->execute();
+    $resultCargo = $stmtCargo->get_result()->fetch_assoc();
+    $cargo = $resultCargo['cargo'];
+    $stmtCargo->close();
     if (isset($_SESSION['usuario'])) {
         $userLogado = $_SESSION['usuario'];
         $cargoLogado = $userLogado['cargo'];
@@ -149,8 +154,8 @@ if (isset($_GET['id'])) {
 
     try {
         $conexao->begin_transaction();
-        $stmt = $conexao->prepare('UPDATE Usuario SET nome = ?, email = ?, cpf = ?, senha = ?, cargo = ?, telefone = ? WHERE id = ?');
-        $stmt->bind_param('ssssssi', $nome, $email, $cpf, $senha, $cargo, $telefone, $_GET['id']);
+        $stmt = $conexao->prepare('UPDATE Usuario SET nome = ?, email = ?, cpf = ?, senha = ?, telefone = ? WHERE id = ?');
+        $stmt->bind_param('sssssi', $nome, $email, $cpf, $senha, $telefone, $_GET['id']);
         $stmt->execute();
 
         $idUsuario = $_GET['id'];

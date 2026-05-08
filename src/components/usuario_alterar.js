@@ -9,20 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const divNivel = document.getElementById('nivel_permissao');
     if (userLogado && userLogado.cargo == '1' && selectCargo) {
         if (userLogado.nivel_permissao == '0') {
-            Array.from(selectCargo.options).forEach(opt => {
-                if (opt.value && opt.value !== '1') {
-                    opt.style.display = 'none';
-                    opt.disabled = true;
-                }
-            });
             if (divNivel) divNivel.disabled = true;
-        } else if (userLogado.nivel_permissao == '1') {
-            Array.from(selectCargo.options).forEach(opt => {
-                if (opt.value === '1' || opt.value === '3' || opt.value === '5') {
-                    opt.style.display = 'none';
-                    opt.disabled = true;
-                }
-            });
         }
     }
 });
@@ -113,12 +100,11 @@ async function alterar() {
     var email = document.getElementById('email').value.trim();
     var cpf = document.getElementById('cpf').value.trim();
     var senha = document.getElementById('senha').value.trim();
-    var cargo = document.getElementById('cargo').value.trim();
     var telefone = document.getElementById('telefone').value.trim();
     const id = document.getElementById('id').value;
 
-    if (!nome || !email || !cpf || !senha || !telefone || !cargo) {
-        alert("Os campos de Nome, Email, CPF, Senha, Telefone e Cargo são obrigatórios.");
+    if (!nome || !email || !cpf || !senha || !telefone) {
+        alert("Os campos de Nome, Email, CPF, Senha e Telefone são obrigatórios.");
         return;
     }
 
@@ -129,44 +115,7 @@ async function alterar() {
     fd.append('email', email);
     fd.append('cpf', cpf);
     fd.append('senha', senha);
-    fd.append('cargo', cargo);
     fd.append('telefone', telefone);
-
-    //serve para dar append somente nos itens que pertencem ao determinado cargo do usuario
-    if (cargo === '1') {//adm
-        fd.append('nivel_permissao', document.getElementById('nivel_permissao').value);
-        fd.append('instituicao_admin', document.getElementById('instituicao_admin').value);
-    } else if (cargo === '2') {//pedagogo
-        var cndb = document.getElementById('cndb').value.trim();
-        if (!cndb) {
-            alert("O campo CNDB é obrigatório para Pedagogo.");
-            return;
-        }
-        fd.append('cndb', cndb);
-        fd.append('instituicao', document.getElementById('instituicao').value);
-        fd.append('especializacao', document.getElementById('especializacao').value);
-    } else if (cargo === '3') {//profissional da saude
-        var crm = document.getElementById('crm').value.trim();
-        var crp = document.getElementById('crp').value.trim();
-        if (!crm && !crp) {
-            alert("Pelo menos um dos campos (CRM ou CRP) deve ser preenchido para Profissional da Saúde.");
-            return;
-        }
-        fd.append('crm', crm);
-        fd.append('crp', crp);
-
-    } else if (cargo === '4') {//professor
-        var cndb = document.getElementById('cndb').value.trim();
-        if (!cndb) {
-            alert("O campo CNDB é obrigatório para Professor.");
-            return;
-        }
-        fd.append('cndb', cndb);
-        fd.append('instituicao', document.getElementById('instituicao').value);
-        fd.append('materia', document.getElementById('materia').value);
-    } else if (cargo === '5') {//responsavel legal
-        fd.append('data_nasc', document.getElementById('data_nasc').value);
-    }
 
     try {
         const retorno = await fetch('../src/controllers/usuario_alterar.php?id=' + id,
