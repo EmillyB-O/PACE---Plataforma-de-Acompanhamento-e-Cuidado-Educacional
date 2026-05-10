@@ -161,59 +161,19 @@
 
         if ($cargo === '1') {//adm
             $nivel_permissao = $_POST['nivel_permissao'];
-            $instituicao_admin = !empty($_POST['instituicao_admin']) ? $_POST['instituicao_admin'] : null;
 
-            if ($nivel_permissao == '1') {
-                if (empty($instituicao_admin)) {
-                    $conexao->rollback();
-                    echo json_encode(['status'=>'nok', 'mensagem'=>'O Código da instituição é obrigatório para Administradores Institucionais.', 'data'=>[]]);
-                    exit;
-                }
-                $stmtCheckInst = $conexao->prepare("SELECT id FROM Instituicao WHERE codigo = ?");
-                $stmtCheckInst->bind_param("i", $instituicao_admin);
-                $stmtCheckInst->execute();
-                $resultCheckInst = $stmtCheckInst->get_result();
-                if ($resultCheckInst->num_rows == 0) {
-                    $conexao->rollback();
-                    echo json_encode(['status'=>'nok', 'mensagem'=>'A instituição informada não existe.', 'data'=>[]]);
-                    exit;
-                }
-                $row = $resultCheckInst->fetch_assoc();
-                $instituicao_admin = $row['id'];
-                $stmtCheckInst->close();
-            } else {
-                $instituicao_admin = null;
-            }
-
+             $instituicao_admin = null;
+            
             $stmt = $conexao->prepare('INSERT INTO Administrador (id_usuario, nivel_permissao, id_instituicao) VALUES (?, ?, ?)');
             $stmt->bind_param('isi', $idUsuarioGerado, $nivel_permissao, $instituicao_admin);
             $stmt->execute();
 
         }elseif ($cargo === '2') { //pedagogo
             $cndb = trim($_POST['cndb']);
-            $instituicao_codigo = trim($_POST['instituicao']);
             $especializacao = !empty($_POST['especializacao']) ? trim($_POST['especializacao']) : null;
 
-            if (empty($instituicao_codigo)) {
-                $conexao->rollback();
-                echo json_encode(['status'=>'nok', 'mensagem'=>'O Código da instituição é obrigatório para Pedagogos.', 'data'=>[]]);
-                exit;
-            }
-            $stmtCheckInst = $conexao->prepare("SELECT id FROM Instituicao WHERE codigo = ?");
-            $stmtCheckInst->bind_param("i", $instituicao_codigo);
-            $stmtCheckInst->execute();
-            $resultCheckInst = $stmtCheckInst->get_result();
-            if ($resultCheckInst->num_rows == 0) {
-                $conexao->rollback();
-                echo json_encode(['status'=>'nok', 'mensagem'=>'A instituição informada não existe.', 'data'=>[]]);
-                exit;
-            }
-            $row = $resultCheckInst->fetch_assoc();
-            $instituicao_id = $row['id'];
-            $stmtCheckInst->close();
-
-            $stmt = $conexao->prepare('INSERT INTO Pedagogo (id_usuario, cndb, id_instituicao, especializacao) VALUES (?, ?, ?, ?)');
-            $stmt->bind_param('isis', $idUsuarioGerado, $cndb, $instituicao_id, $especializacao);
+            $stmt = $conexao->prepare('INSERT INTO Pedagogo (id_usuario, cndb, especializacao) VALUES (?, ?, ?)');
+            $stmt->bind_param('iss', $idUsuarioGerado, $cndb, $especializacao);
             $stmt->execute();
 
         }elseif ($cargo === '3') { //profissional de saude
@@ -226,33 +186,15 @@
 
         }elseif ($cargo === '4') { //professor
             $cndb = trim($_POST['cndb']);
-            $instituicao_codigo = trim($_POST['instituicao']);
             $materia = !empty($_POST['materia']) ? trim($_POST['materia']) : null;
 
-            if (empty($instituicao_codigo)) {
-                $conexao->rollback();
-                echo json_encode(['status'=>'nok', 'mensagem'=>'O Código da instituição é obrigatório para Professores.', 'data'=>[]]);
-                exit;
-            }
-            $stmtCheckInst = $conexao->prepare("SELECT id FROM Instituicao WHERE codigo = ?");
-            $stmtCheckInst->bind_param("i", $instituicao_codigo);
-            $stmtCheckInst->execute();
-            $resultCheckInst = $stmtCheckInst->get_result();
-            if ($resultCheckInst->num_rows == 0) {
-                $conexao->rollback();
-                echo json_encode(['status'=>'nok', 'mensagem'=>'A instituição informada não existe.', 'data'=>[]]);
-                exit;
-            }
-            $row = $resultCheckInst->fetch_assoc();
-            $instituicao_id = $row['id'];
-            $stmtCheckInst->close();
-
-            $stmt = $conexao->prepare('INSERT INTO Professor (id_usuario, cndb, id_instituicao, materia) VALUES (?, ?, ?, ?)');
-            $stmt->bind_param('isis', $idUsuarioGerado, $cndb, $instituicao_id, $materia);
+            $stmt = $conexao->prepare('INSERT INTO Professor (id_usuario, cndb, materia) VALUES (?, ?, ?)');
+            $stmt->bind_param('iss', $idUsuarioGerado, $cndb, $materia);
             $stmt->execute();
         
         }elseif ($cargo === '5') { //responsavel legal
             $data_nasc = $_POST['data_nasc'];
+            
 
             $stmt = $conexao->prepare('INSERT INTO Responsavel_Legal (id_usuario, data_nasc) VALUES (?, ?)');
             $stmt->bind_param('is', $idUsuarioGerado, $data_nasc);

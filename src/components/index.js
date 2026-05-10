@@ -48,6 +48,18 @@ async function recusar(id) {
     }
 }
 
+function instituicoes(id) {
+    const modal = new bootstrap.Modal(document.getElementById("modalInst"));
+    modal.show();
+
+    console.log("ID clicado:", id);
+}
+function fecharModal() {
+    const modalEl = document.getElementById("modalInst");
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    modal.hide();
+}
+
 //TODA A FUNCAO preencherTabela TEM QUE SER ADAPTADA PARA OS USUARIOS ESPECIAIS
 function preencherTabela(tabela){
     var html = `
@@ -75,7 +87,8 @@ function preencherTabela(tabela){
         }
 
         let btns = `<a href='usuario_alterar.html?id=${tabela[i].id}' class="btn btn-sm btn-primary">Alterar</a>
-                    <a href='#' onclick='excluir(${tabela[i].id})' class="btn btn-sm btn-danger">Excluir</a>`;
+                    <a href='#' onclick='excluir(${tabela[i].id})' class="btn btn-sm btn-danger">Excluir</a>
+                    <a href='#' onclick='instituicoes(${tabela[i].id})' class="btn btn-sm btn-info">Instituições</a>`;
         
         let descStatus = tabela[i].status == 1 ? 'Ativo' : 'Inativo';
         if (tabela[i].status == '2') {

@@ -137,6 +137,19 @@ CREATE TABLE Avisos (
     FOREIGN KEY (id_administrador) REFERENCES Administrador(id_usuario)
 );
 
+CREATE TABLE Professor_Instituicao (
+    id_professor INT NOT NULL,
+    id_instituicao INT NOT NULL,
+    FOREIGN KEY (id_professor) REFERENCES Professor(id_usuario),
+    FOREIGN KEY (id_instituicao) REFERENCES Instituicao(id)
+);
+CREATE TABLE Pedagogo_Instituicao (
+    id_pedagogo INT NOT NULL,
+    id_instituicao INT NOT NULL,
+    FOREIGN KEY (id_pedagogo) REFERENCES Pedagogo(id_usuario),
+    FOREIGN KEY (id_instituicao) REFERENCES Instituicao(id)
+);
+
     -- Login: admin@pace.com
     -- Senha: password
 

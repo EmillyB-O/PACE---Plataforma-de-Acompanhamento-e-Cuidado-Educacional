@@ -89,10 +89,15 @@ async function novo() {
     var cargo = document.getElementById('cargo').value.trim();
     var telefone = document.getElementById('telefone').value.replace(/\D/g, '');
 
+    
+
     if (!nome || !email || !cpf || !senha || !telefone || !cargo) {
         alert("Os campos de Nome, Email, CPF, Senha, Telefone e Cargo são obrigatórios.");
         return;
     }
+
+    
+    
 
     const fd = new FormData();
     fd.append('nome', nome);
@@ -101,11 +106,11 @@ async function novo() {
     fd.append('senha', senha);
     fd.append('cargo', cargo);
     fd.append('telefone', telefone);
+    
+    
 
     if (cargo === '1') {
         fd.append('nivel_permissao', document.getElementById('nivel_permissao').value);
-        fd.append('instituicao_admin', document.getElementById('instituicao_admin').value);
-        //o adm vem com o nivel de permissao para adm instituicionais, entretanto ele só é linkado com a instituição depois de alguem atribuir ele à ela
     } else if (cargo === '2') {//pedagogo
         var cndb = document.getElementById('cndb').value.trim();
         if (!cndb) {
@@ -113,7 +118,6 @@ async function novo() {
             return;
         }
         fd.append('cndb', cndb);
-        fd.append('instituicao', document.getElementById('instituicao').value);
         fd.append('especializacao', document.getElementById('especializacao').value);
     } else if (cargo === '3') {//profissional da saude
         var crm = document.getElementById('crm').value.trim();
@@ -132,11 +136,11 @@ async function novo() {
             return;
         }
         fd.append('cndb', cndb);
-        fd.append('instituicao', document.getElementById('instituicao').value);
+
         fd.append('materia', document.getElementById('materia').value);
     } else if (cargo === '5') {//responsavel legal
         fd.append('data_nasc', document.getElementById('data_nasc').value);
-    }
+    }   
 
     //isso serve para identificar se a transacao deu certo ou nn, pois para enviar os dados de usuario para o banco é necessario uma transacao 
     try {
