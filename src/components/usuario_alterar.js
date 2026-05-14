@@ -145,6 +145,7 @@ async function alterar() {
         fd.append('cndb', cndb);
         fd.append('instituicao', document.getElementById('instituicao').value);
         fd.append('especializacao', document.getElementById('especializacao').value);
+
     } else if (cargo === '3') {//profissional da saude
         var crm = document.getElementById('crm').value.trim();
         var crp = document.getElementById('crp').value.trim();
@@ -152,6 +153,7 @@ async function alterar() {
             alert("Pelo menos um dos campos (CRM ou CRP) deve ser preenchido para Profissional da Saúde.");
             return;
         }
+
         fd.append('crm', crm);
         fd.append('crp', crp);
 

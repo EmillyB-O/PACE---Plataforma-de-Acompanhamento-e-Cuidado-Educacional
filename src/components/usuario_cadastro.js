@@ -3,6 +3,24 @@ document.getElementById('enviar').addEventListener('click', () => { //"escuta" o
 });
 
 var seletor = document.getElementById('cargo');
+var saude = document.getElementById('conselho'); // select com opção de crm ou crp
+
+saude.addEventListener('change', function() {
+    const div_crm = document.getElementById('div_crm');
+    const div_crp = document.getElementById('div_crp');
+
+    if(div_crm) div_crm.style.display = 'none'; // para grantir que existe essa div está oculta
+    if(div_crp) div_crp.style.display = 'none';
+
+    if(this.value === 'seletor_crm' && div_crm){
+        div_crm.style.display = 'block';
+        document.getElementById("crp").value = ""; // limpa o campo crm 
+
+    }else if(this.value === 'seletor_crp' && div_crp){
+        div_crp.style.display = 'block';
+        document.getElementById("crm").value = "";
+    }
+});
 
 seletor.addEventListener('change', function() {
     const div_admin = document.getElementById('div_admin');
@@ -63,6 +81,7 @@ async function novo() {
         fd.append('cndb', cndb);
         fd.append('instituicao', document.getElementById('instituicao').value);
         fd.append('especializacao', document.getElementById('especializacao').value);
+
     }else if(cargo === '3'){//profissional da saude
         var crm = document.getElementById('crm').value.trim();
         var crp = document.getElementById('crp').value.trim();
