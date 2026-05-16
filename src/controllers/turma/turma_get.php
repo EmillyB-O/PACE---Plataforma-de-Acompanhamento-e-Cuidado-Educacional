@@ -9,11 +9,11 @@
 
     if(isset($_GET['id'])){
         // Segunda situação - RECEBENDO O ID por GET
-        $stmt = $conexao->prepare("SELECT * FROM Turma WHERE id = ?");
+        $stmt = $conexao->prepare("SELECT t.*, i.nome as nome_instituicao FROM Turma t LEFT JOIN Instituicao i ON t.id_instituicao = i.id WHERE t.id = ?");
         $stmt->bind_param("i",$_GET['id']);
     }else{
         // Primeira situação - SEM RECEBER O ID por GET
-        $stmt = $conexao->prepare("SELECT * FROM Turma");
+        $stmt = $conexao->prepare("SELECT t.*, i.nome as nome_instituicao FROM Turma t LEFT JOIN Instituicao i ON t.id_instituicao = i.id");
     }
     
     $stmt->execute();

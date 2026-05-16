@@ -158,6 +158,7 @@
         $stmt->execute();
 
         $idUsuarioGerado = $conexao->insert_id;
+        $id_instituicao = $_SESSION['usuario']['id_instituicao'] ?? null;
 
         if ($cargo === '1') {//adm
             $nivel_permissao = $_POST['nivel_permissao'];
@@ -194,6 +195,7 @@
             $instituicao_codigo = trim($_POST['instituicao']);
             $especializacao = !empty($_POST['especializacao']) ? trim($_POST['especializacao']) : null;
 
+<<<<<<< Updated upstream
             if (empty($instituicao_codigo)) {
                 $conexao->rollback();
                 echo json_encode(['status'=>'nok', 'mensagem'=>'O Código da instituição é obrigatório para Pedagogos.', 'data'=>[]]);
@@ -214,6 +216,10 @@
 
             $stmt = $conexao->prepare('INSERT INTO Pedagogo (id_usuario, cndb, id_instituicao, especializacao) VALUES (?, ?, ?, ?)');
             $stmt->bind_param('isis', $idUsuarioGerado, $cndb, $instituicao_id, $especializacao);
+=======
+            $stmt = $conexao->prepare('INSERT INTO Pedagogo (id_usuario, especializacao, id_instituicao) VALUES (?, ?, ?)');
+            $stmt->bind_param('isi', $idUsuarioGerado, $especializacao, $id_instituicao);
+>>>>>>> Stashed changes
             $stmt->execute();
 
         }elseif ($cargo === '3') { //profissional de saude
@@ -229,6 +235,7 @@
             $instituicao_codigo = trim($_POST['instituicao']);
             $materia = !empty($_POST['materia']) ? trim($_POST['materia']) : null;
 
+<<<<<<< Updated upstream
             if (empty($instituicao_codigo)) {
                 $conexao->rollback();
                 echo json_encode(['status'=>'nok', 'mensagem'=>'O Código da instituição é obrigatório para Professores.', 'data'=>[]]);
@@ -249,6 +256,10 @@
 
             $stmt = $conexao->prepare('INSERT INTO Professor (id_usuario, cndb, id_instituicao, materia) VALUES (?, ?, ?, ?)');
             $stmt->bind_param('isis', $idUsuarioGerado, $cndb, $instituicao_id, $materia);
+=======
+            $stmt = $conexao->prepare('INSERT INTO Professor (id_usuario, materia, id_instituicao) VALUES (?, ?, ?)');
+            $stmt->bind_param('isi', $idUsuarioGerado, $materia, $id_instituicao);
+>>>>>>> Stashed changes
             $stmt->execute();
         
         }elseif ($cargo === '5') { //responsavel legal

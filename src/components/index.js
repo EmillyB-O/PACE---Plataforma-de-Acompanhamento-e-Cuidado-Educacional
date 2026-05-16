@@ -66,7 +66,15 @@ function preencherTabela(tabela){
     for(var i=0;i<tabela.length;i++){
         let descCargo = '';
         switch(parseInt(tabela[i].cargo)) {
-            case 1: descCargo = 'Admin'; break;
+            case 1: 
+                if (tabela[i].nivel_permissao == '0') {
+                    descCargo = 'Admin Global';
+                } else if (tabela[i].nivel_permissao == '1') {
+                    descCargo = 'Admin Institucional';
+                } else {
+                    descCargo = 'Admin';
+                }
+                break;
             case 2: descCargo = 'Pedagogo'; break;
             case 3: descCargo = 'Prof. Saúde'; break;
             case 4: descCargo = 'Professor'; break;

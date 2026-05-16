@@ -19,9 +19,9 @@
     //ADAPTAR OS SELECTS PARA UTILIZAR JOIN COM A ESPECIALIZACAO DE CADA USUARIO
     $query = "SELECT u.id, u.nome, u.email, u.cpf, u.status, u.cargo, u.telefone, 
               a.nivel_permissao, a.id_instituicao as admin_instituicao,
-              ped.cndb as ped_cndb, ped.id_instituicao as ped_instituicao, ped.especializacao,
+              ped.id_instituicao as ped_instituicao, ped.especializacao,
               ps.crm, ps.crp,
-              prof.cndb as prof_cndb, prof.id_instituicao as prof_instituicao, prof.materia,
+              prof.id_instituicao as prof_instituicao, prof.materia,
               rl.data_nasc
               FROM Usuario u
               LEFT JOIN Administrador a ON u.id = a.id_usuario

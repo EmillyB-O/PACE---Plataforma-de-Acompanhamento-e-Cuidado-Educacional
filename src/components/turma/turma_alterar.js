@@ -1,8 +1,11 @@
-document.addEventListener("DOMContentLoaded", () => {
+let turmaId = null;
+
+document.addEventListener("DOMContentLoaded", async () => {
     valida_sessao();
+    await carregarInstituicoes();
     const url = new URLSearchParams(window.location.search);
-    const id = url.get("id");
-    buscar(id);
+    turmaId = url.get("id");
+    buscar(turmaId);
 
 });
 
@@ -34,6 +37,10 @@ async function alterar(){
     var quantidade = document.getElementById('quantidade').value;
     var id_instituicao = document.getElementById('id_instituicao').value;
     
+    if (!nome || !serie || !ano || !quantidade || !id_instituicao) {
+        alert('Por favor, preencha todos os campos obrigatórios.');
+        return;
+    }
 
     const fd = new FormData();
     fd.append('nome', nome);
@@ -42,7 +49,7 @@ async function alterar(){
     fd.append('quantidade', quantidade);
     fd.append('id_instituicao', id_instituicao);
     
-    const retorno = await fetch('../src/controllers/turma/turma_alterar.php?id='+id,
+    const retorno = await fetch('../src/controllers/turma/turma_alterar.php?id='+turmaId,
         {
             method: 'POST',
             body: fd
@@ -55,5 +62,47 @@ async function alterar(){
         window.location.href = 'turma.html';
     }else{
         alert('Erro: ' + resposta.mensagem);
+    }
+}
+
+async function carregarInstituicoes() {
+    try {
+        const retorno = await fetch('../src/controllers/instituicao/instituicao_get.php');
+        const resposta = await retorno.json();
+        if (resposta.status === 'ok') {
+            window.instituicoesCache = resposta.data;
+            renderInstituicoes(window.instituicoesCache);
+            const searchInput = document.getElementById('search_instituicao');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const termo = e.target.value.toLowerCase();
+                    const filtradas = window.instituicoesCache.filter(inst => inst.nome.toLowerCase().includes(termo));
+                    // get currently selected value to preserve it
+                    const select = document.getElementById('id_instituicao');
+                    const selectedVal = select.value;
+                    renderInstituicoes(filtradas);
+                    if(selectedVal) select.value = selectedVal;
+                });
+            }
+        }
+    } catch (e) {
+        console.error("Erro ao carregar instituições", e);
+    }
+}
+
+function renderInstituicoes(lista) {
+    const select = document.getElementById('id_instituicao');
+    if (!select) return;
+    
+    // preserve current selection
+    const currentVal = select.value;
+    
+    select.innerHTML = '<option value="">Selecione uma instituição</option>';
+    lista.forEach(inst => {
+        select.innerHTML += `<option value="${inst.id}">${inst.nome}</option>`;
+    });
+    
+    if (currentVal) {
+        select.value = currentVal;
     }
 }
