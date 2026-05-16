@@ -1,10 +1,13 @@
 document.addEventListener("DOMContentLoaded", async () => {
     await valida_sessao();
     buscar();
-});
 
-document.getElementById('novo').addEventListener('click', () => {
-    window.location.href = 'cadastro_admin.html';
+    const novoBtn = document.getElementById('novo');
+    if (novoBtn) {
+        novoBtn.addEventListener('click', () => {
+            window.location.href = 'cadastro_admin.html';
+        });
+    }
 });
 
 async function buscar() {
@@ -16,6 +19,7 @@ async function buscar() {
 }
 
 async function excluir(id) {
+    if(!confirm("Tem certeza que deseja excluir este usuário?")) return;
     const retorno = await fetch('../src/controllers/usuario_excluir.php?id='+id);
     const resposta = await retorno.json();
     if(resposta.status == 'ok'){
@@ -48,7 +52,6 @@ async function recusar(id) {
     }
 }
 
-//TODA A FUNCAO preencherTabela TEM QUE SER ADAPTADA PARA OS USUARIOS ESPECIAIS
 function preencherTabela(tabela){
     var html = `
         <table class="table table-striped table-hover mt-3">

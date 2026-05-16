@@ -70,20 +70,7 @@ async function carregarInstituicoes() {
         const retorno = await fetch('../src/controllers/instituicao/instituicao_get.php');
         const resposta = await retorno.json();
         if (resposta.status === 'ok') {
-            window.instituicoesCache = resposta.data;
-            renderInstituicoes(window.instituicoesCache);
-            const searchInput = document.getElementById('search_instituicao');
-            if (searchInput) {
-                searchInput.addEventListener('input', (e) => {
-                    const termo = e.target.value.toLowerCase();
-                    const filtradas = window.instituicoesCache.filter(inst => inst.nome.toLowerCase().includes(termo));
-                    // get currently selected value to preserve it
-                    const select = document.getElementById('id_instituicao');
-                    const selectedVal = select.value;
-                    renderInstituicoes(filtradas);
-                    if(selectedVal) select.value = selectedVal;
-                });
-            }
+            renderInstituicoes(resposta.data);
         }
     } catch (e) {
         console.error("Erro ao carregar instituições", e);

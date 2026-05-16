@@ -55,12 +55,6 @@ async function novo() {
         fd.append('nivel_permissao', document.getElementById('nivel_permissao').value);
         //o adm vem com o nivel de permissao para adm instituicionais, entretanto ele só é linkado com a instituição depois de alguem atribuir ele à ela
     }else if(cargo === '2'){//pedagogo
-        var cndb = document.getElementById('cndb').value.trim();
-        if (!cndb) {
-            alert("O campo CNDB é obrigatório para Pedagogo.");
-            return;
-        }
-        fd.append('cndb', cndb);
         fd.append('instituicao', document.getElementById('instituicao').value);
         fd.append('especializacao', document.getElementById('especializacao').value);
     }else if(cargo === '3'){//profissional da saude
@@ -74,12 +68,6 @@ async function novo() {
         fd.append('crp', crp);
 
     }else if(cargo === '4'){//professor
-        var cndb = document.getElementById('cndb').value.trim();
-        if (!cndb) {
-            alert("O campo CNDB é obrigatório para Professor.");
-            return;
-        }
-        fd.append('cndb', cndb);
         fd.append('instituicao', document.getElementById('instituicao').value);
         fd.append('materia', document.getElementById('materia').value); 
     }else if(cargo === '5'){//responsavel legal

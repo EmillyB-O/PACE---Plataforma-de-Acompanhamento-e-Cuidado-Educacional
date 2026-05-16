@@ -1,11 +1,12 @@
 document.addEventListener('DOMContentLoaded', async () => {
     await valida_sessao();
+    await carregarInstituicoes();
 
-    // Restrição de criação de Cargo baseada no nível do usuário atual
     const userLogado = window.usuarioLogado;
     const selectCargo = document.getElementById('cargo');
     const divAdminGroup = document.getElementById('div_admin');
     const divNivel = document.getElementById('nivel_permissao');
+    
     if (userLogado && userLogado.cargo == '1' && selectCargo) {
         if (userLogado.nivel_permissao == '0') {
             // Global: Só cadastra ADM (Nivel 1 Institucional)
@@ -17,12 +18,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             if (divNivel) {
                 divNivel.value = '1';
-                divNivel.disabled = true; // força a ser 1
+                divNivel.disabled = true;
             }
         } else if (userLogado.nivel_permissao == '1') {
             // Institucional: Cadastra todo mundo MENOS ADM
             Array.from(selectCargo.options).forEach(opt => {
-                if (opt.value === '1' || opt.value === '3' || opt.value === '5') {
+                if (opt.value === '1') {
                     opt.style.display = 'none';
                     opt.disabled = true;
                 }
@@ -33,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Limpeza cpf: para remover tudo que não é número + limite de 11 dígitos
+    // Limpeza inputs numéricos
     const cpfInput = document.getElementById('cpf');
     if (cpfInput) {
         cpfInput.addEventListener('input', (e) => {
@@ -47,39 +48,100 @@ document.addEventListener('DOMContentLoaded', async () => {
             e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11);
         });
     }
-});
 
-document.getElementById('enviar').addEventListener('click', () => { //"escuta" o clique do botao e automaticamente executa a funcao
-    novo(); // a funcao cria um adm novo (NESSE CASO É UM ADM, poderia ser um usuario novo qualquer)
-});
+    // Listener para o botão enviar
+    const enviarBtn = document.getElementById('enviar');
+    if (enviarBtn) {
+        enviarBtn.addEventListener('click', () => {
+            novo();
+        });
+    }
 
-var seletor = document.getElementById('cargo');
+    // Listener para o seletor de cargo
+    if (selectCargo) {
+        selectCargo.addEventListener('change', function () {
+            const div_admin = document.getElementById('div_admin');
+            const div_pedagogo = document.getElementById('div_pedagogo');
+            const div_saude = document.getElementById('div_saude');
+            const div_prof = document.getElementById('div_prof');
+            const div_responsavel = document.getElementById('div_responsavel');
+            const div_instituicao_comum = document.getElementById('div_instituicao_comum');
+            const selectNivel = document.getElementById('nivel_permissao');
 
-seletor.addEventListener('change', function () {
-    const div_admin = document.getElementById('div_admin');
-    const div_pedagogo = document.getElementById('div_pedagogo');
-    const div_saude = document.getElementById('div_saude');
-    const div_prof = document.getElementById('div_prof');
-    const div_responsavel = document.getElementById('div_responsavel');
+            if (div_admin) div_admin.style.display = 'none';
+            if (div_pedagogo) div_pedagogo.style.display = 'none';
+            if (div_saude) div_saude.style.display = 'none';
+            if (div_prof) div_prof.style.display = 'none';
+            if (div_responsavel) div_responsavel.style.display = 'none';
+            if (div_instituicao_comum) div_instituicao_comum.style.display = 'none';
 
-    if (div_admin) div_admin.style.display = 'none';
-    if (div_pedagogo) div_pedagogo.style.display = 'none';
-    if (div_saude) div_saude.style.display = 'none';
-    if (div_prof) div_prof.style.display = 'none';
-    if (div_responsavel) div_responsavel.style.display = 'none';
+            // Regra de visibilidade da Instituição
+            // Cargos 2 (Pedagogo), 4 (Professor) e 1 (Adm) se o nível for 1 (Institucional)
+            if (this.value === '1' && div_admin) {
+                div_admin.style.display = 'block';
+                // Mostra instituição se nível for 1
+                if (selectNivel && selectNivel.value === '1') {
+                    if (div_instituicao_comum) div_instituicao_comum.style.display = 'block';
+                }
+            } else if (this.value === '2' && div_pedagogo) {
+                div_pedagogo.style.display = 'block';
+                if (div_instituicao_comum) div_instituicao_comum.style.display = 'block';
+            } else if (this.value === '3' && div_saude) {
+                div_saude.style.display = 'block';
+            } else if (this.value === '4' && div_prof) {
+                div_prof.style.display = 'block';
+                if (div_instituicao_comum) div_instituicao_comum.style.display = 'block';
+            } else if (this.value === '5' && div_responsavel) {
+                div_responsavel.style.display = 'block';
+            }
+        });
+    }
 
-    if (this.value === '1' && div_admin) {
-        div_admin.style.display = 'block';
-    } else if (this.value === '2' && div_pedagogo) {
-        div_pedagogo.style.display = 'block';
-    } else if (this.value === '3' && div_saude) {
-        div_saude.style.display = 'block';
-    } else if (this.value === '4' && div_prof) {
-        div_prof.style.display = 'block';
-    } else if (this.value === '5' && div_responsavel) {
-        div_responsavel.style.display = 'block';
+    // Listener para o nível de permissão (para mostrar instituição se mudar para 1)
+    const nivelInput = document.getElementById('nivel_permissao');
+    if (nivelInput) {
+        nivelInput.addEventListener('change', () => {
+            const selectCargo = document.getElementById('cargo');
+            const div_instituicao_comum = document.getElementById('div_instituicao_comum');
+            if (selectCargo && selectCargo.value === '1') {
+                if (nivelInput.value === '1') {
+                    if (div_instituicao_comum) div_instituicao_comum.style.display = 'block';
+                } else {
+                    if (div_instituicao_comum) div_instituicao_comum.style.display = 'none';
+                }
+            }
+        });
     }
 });
+
+async function carregarInstituicoes() {
+    try {
+        const retorno = await fetch('../src/controllers/instituicao/instituicao_get.php');
+        const resposta = await retorno.json();
+        if (resposta.status === 'ok') {
+            renderInstituicoes(resposta.data);
+        }
+    } catch (e) {
+        console.error("Erro ao carregar instituições:", e);
+    }
+}
+
+function renderInstituicoes(lista) {
+    const select = document.getElementById('id_instituicao');
+    if (!select) return;
+    let html = '<option value="">Selecione...</option>';
+    lista.forEach(inst => {
+        html += `<option value="${inst.id}">${inst.nome}</option>`;
+    });
+    select.innerHTML = html;
+
+    // Se o usuário logado for Adm Institucional, pré-seleciona a instituição dele
+    const userLogado = window.usuarioLogado;
+    if (userLogado && userLogado.nivel_permissao == '1' && userLogado.id_instituicao) {
+        select.value = userLogado.id_instituicao;
+        select.disabled = true; // Impede que ele cadastre em outra instituição
+    }
+}
 
 async function novo() {
     var nome = document.getElementById('nome').value.trim();
@@ -102,23 +164,20 @@ async function novo() {
     fd.append('cargo', cargo);
     fd.append('telefone', telefone);
 
+    const id_instituicao = document.getElementById('id_instituicao').value;
+
     if (cargo === '1') {
-        fd.append('nivel_permissao', document.getElementById('nivel_permissao').value);
-        fd.append('instituicao_admin', document.getElementById('instituicao_admin').value);
-        //o adm vem com o nivel de permissao para adm instituicionais, entretanto ele só é linkado com a instituição depois de alguem atribuir ele à ela
-    } else if (cargo === '2') {//pedagogo
-<<<<<<< Updated upstream
-        var cndb = document.getElementById('cndb').value.trim();
-        if (!cndb) {
-            alert("O campo CNDB é obrigatório para Pedagogo.");
-            return;
+        const nivel = document.getElementById('nivel_permissao').value;
+        fd.append('nivel_permissao', nivel);
+        if (nivel === '1') {
+            if (!id_instituicao) { alert("A instituição é obrigatória para Admin Institucional."); return; }
+            fd.append('id_instituicao', id_instituicao);
         }
-        fd.append('cndb', cndb);
-        fd.append('instituicao', document.getElementById('instituicao').value);
-=======
->>>>>>> Stashed changes
+    } else if (cargo === '2') { // pedagogo
+        if (!id_instituicao) { alert("A instituição é obrigatória para Pedagogo."); return; }
+        fd.append('id_instituicao', id_instituicao);
         fd.append('especializacao', document.getElementById('especializacao').value);
-    } else if (cargo === '3') {//profissional da saude
+    } else if (cargo === '3') { // profissional da saude
         var crm = document.getElementById('crm').value.trim();
         var crp = document.getElementById('crp').value.trim();
         if (!crm && !crp) {
@@ -127,36 +186,24 @@ async function novo() {
         }
         fd.append('crm', crm);
         fd.append('crp', crp);
-
-    } else if (cargo === '4') {//professor
-<<<<<<< Updated upstream
-        var cndb = document.getElementById('cndb').value.trim();
-        if (!cndb) {
-            alert("O campo CNDB é obrigatório para Professor.");
-            return;
-        }
-        fd.append('cndb', cndb);
-        fd.append('instituicao', document.getElementById('instituicao').value);
-=======
->>>>>>> Stashed changes
+    } else if (cargo === '4') { // professor
+        if (!id_instituicao) { alert("A instituição é obrigatória para Professor."); return; }
+        fd.append('id_instituicao', id_instituicao);
         fd.append('materia', document.getElementById('materia').value);
-    } else if (cargo === '5') {//responsavel legal
+    } else if (cargo === '5') { // responsavel legal
         fd.append('data_nasc', document.getElementById('data_nasc').value);
     }
 
-    //isso serve para identificar se a transacao deu certo ou nn, pois para enviar os dados de usuario para o banco é necessario uma transacao 
     try {
-        const retorno = await fetch('../src/controllers/usuario_cadastro.php',
-            {
-                method: 'POST',
-                body: fd
-            }
-        );//prepara um retorno padrao para exibir a resposta de sucesso/erro
+        const retorno = await fetch('../src/controllers/usuario_cadastro.php', {
+            method: 'POST',
+            body: fd
+        });
 
         const resposta = await retorno.json();
         if (resposta.status == 'ok') {
             alert('Sucesso: ' + resposta.mensagem);
-            window.location.href = 'index.html'; // direciona pra home apos criar acc
+            window.location.href = 'painel_admin.html'; 
         } else {
             alert('Erro: ' + resposta.mensagem);
         }
@@ -164,5 +211,4 @@ async function novo() {
         console.error("Erro na requisição: ", erro);
         alert("Ocorreu um erro ao comunicar com o servidor.")
     }
-
 }

@@ -45,12 +45,19 @@ async function valida_sessao() {
         const configureNavbar = () => {
             const links = document.querySelectorAll('.nav-link');
             links.forEach(link => {
-                const text = link.innerText.trim();
+                const text = link.innerText.trim().toLowerCase();
                 if (cargo === '1') {
                     if (nivel_permissao === '0') {
-                        if (text === 'Turmas' || text === 'Alunos') link.parentElement.style.display = 'none';
+                        // Global: Ocultar Turmas e Alunos
+                        if (text === 'turmas' || text === 'alunos') {
+                            link.parentElement.style.display = 'none';
+                        }
                     } else if (nivel_permissao === '1') {
-                        if (text === 'Instituições') link.parentElement.style.display = 'none';
+                        // Institucional: Ocultar Instituições
+                        // Deve ver: Home, Usuários, Turmas, Alunos
+                        if (text.includes('instituição') || text.includes('instituições') || text.includes('instituicao')) {
+                            link.parentElement.style.display = 'none';
+                        }
                     }
                 }
             });

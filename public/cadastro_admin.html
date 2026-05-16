@@ -47,7 +47,7 @@
 
                     <!--Profissionais da saúde e professores-->
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Alunos</a>
+                        <a class="nav-link" href="aluno.html">Alunos</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
@@ -103,25 +103,24 @@
                         </select>
                     </div>
                 </div>
+                
+                <!-- Seleção de Instituição Comum (apenas para cargos que exigem vínculo) -->
+                <div id="div_instituicao_comum" style="display: none;" class="mb-3 mt-3 bg-light p-3 border rounded">
+                    <label for="id_instituicao" class="form-label">Instituição</label>
+                    <select id="id_instituicao" class="form-select">
+                        <option value="">Carregando instituições...</option>
+                    </select>
+                </div>
 
                 <!-- Divs Especializadas -->
                 <div id="div_admin" style="display: none;" class="mt-3 bg-light p-3 border rounded">
                     <h5>Dados de Administrador</h5>
                     <label for="nivel_permissao" class="form-label">Nível de Permissão (0 = Global, 1 = Institucional)</label>
                     <input type="number" min="0" max="1" class="form-control" id="nivel_permissao">
-                    
-                    <label for="instituicao_admin" class="form-label mt-2">Código da Instituição (obrigatório para Institucional)</label>
-                    <input type="number" min="1" class="form-control" id="instituicao_admin">
                 </div>
 
                 <div id="div_pedagogo" style="display: none;" class="mt-3 bg-light p-3 border rounded">
                     <h5>Dados de Pedagogo</h5>
-                    <label for="cndb" class="form-label">CNDB</label>
-                    <input type="number" min="0" class="form-control mb-2" id="cndb">
-                    
-                    <label for="instituicao" class="form-label">Código da Instituição</label>
-                    <input type="number" class="form-control mb-2" id="instituicao">
-
                     <label for="especializacao" class="form-label">Especialização</label>
                     <input type="text" class="form-control" id="especializacao">
                 </div>

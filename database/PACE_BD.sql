@@ -23,19 +23,14 @@ CREATE TABLE Usuario (
 CREATE TABLE Administrador (
     id_usuario INT PRIMARY KEY,
     nivel_permissao ENUM ('0','1') NOT NULL, -- 0: Global, 1: Institucional
-    id_instituicao INT,
-    FOREIGN KEY (id_usuario) REFERENCES Usuario(id),
-    FOREIGN KEY (id_instituicao) REFERENCES Instituicao(id)
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id)
 );
 -- alter table Administrador modify column nivel_permissao ENUM ('0','1') NOT NULL;
 
 CREATE TABLE Pedagogo (
     id_usuario INT PRIMARY KEY,
-    cndb VARCHAR(20) UNIQUE,
-    id_instituicao INT NOT NULL,
     especializacao VARCHAR(50),
-    FOREIGN KEY (id_usuario) REFERENCES Usuario(id),
-    FOREIGN KEY (id_instituicao) REFERENCES Instituicao(id)
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id)
 );
 CREATE TABLE Profissional_Saude (
     id_usuario INT PRIMARY KEY,
@@ -45,16 +40,20 @@ CREATE TABLE Profissional_Saude (
 );
 CREATE TABLE Professor (
     id_usuario INT PRIMARY KEY,
-    cndb VARCHAR(20) UNIQUE,
-    id_instituicao INT NOT NULL,
     materia VARCHAR(50),
-    FOREIGN KEY (id_usuario) REFERENCES Usuario(id),
-    FOREIGN KEY (id_instituicao) REFERENCES Instituicao(id)
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id)
 );
 CREATE TABLE Responsavel_Legal (
     id_usuario INT PRIMARY KEY,
     data_nasc DATE,
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id)
+);
+CREATE TABLE Usuario_Instituicao (
+    id_usuario INT NOT NULL,
+    id_instituicao INT NOT NULL,
+    PRIMARY KEY (id_usuario, id_instituicao),
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id),
+    FOREIGN KEY (id_instituicao) REFERENCES Instituicao(id)
 );
 CREATE TABLE Turma (
     id INT AUTO_INCREMENT PRIMARY KEY,

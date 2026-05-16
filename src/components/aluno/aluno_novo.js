@@ -1,9 +1,19 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await valida_sessao();
     carregarInstituicoes();
+    
+    document.getElementById('id_instituicao').addEventListener('change', (e) => {
+        const id_instituicao = e.target.value;
+        if (id_instituicao) {
+            carregarTurmas(id_instituicao);
+        } else {
+            document.getElementById('id_turma').innerHTML = '<option value="">Selecione uma instituição primeiro</option>';
+        }
+    });
 });
 
-document.getElementById('enviar').addEventListener('click', () => { //"escuta" o clique do botao e automaticamente executa a funcao
-    novo(); // a funcao cria uma instituicao nova
+document.getElementById('enviar').addEventListener('click', () => {
+    novo(); 
 });
 
 async function novo() {
@@ -15,6 +25,11 @@ async function novo() {
     var id_instituicao = document.getElementById('id_instituicao').value;
     var id_turma = document.getElementById('id_turma').value;
     
+    if (!nome || !id_instituicao || !id_turma) {
+        alert("Por favor, preencha os campos obrigatórios (Nome, Instituição e Turma).");
+        return;
+    }
+
     const fd = new FormData();
     fd.append('nome', nome);
     fd.append('serie', serie);
@@ -24,27 +39,23 @@ async function novo() {
     fd.append('id_instituicao', id_instituicao);
     fd.append('id_turma', id_turma);
 
-    //isso serve para identificar se a transacao deu certo ou nn, pois para enviar os dados da instituicao para o banco é necessario uma transacao 
     try {
-        const retorno = await fetch('../src/controllers/aluno/aluno_novo.php',
-            {
-                method: 'POST',
-                body: fd
-            }
-        );//prepara um retorno padrao para exibir a resposta de sucesso/erro
+        const retorno = await fetch('../src/controllers/aluno/aluno_novo.php', {
+            method: 'POST',
+            body: fd
+        });
 
         const resposta = await retorno.json();
         if(resposta.status == 'ok'){
             alert('Sucesso: ' + resposta.mensagem);
-            window.location.href = 'aluno.html'; // direciona pra lista apos criar
-        }else{
+            window.location.href = 'aluno.html';
+        } else {
             alert('Erro: ' + resposta.mensagem);
         }
-    }catch(erro){
+    } catch(erro) {
         console.error("Erro na requisição: ", erro);
         alert("Ocorreu um erro ao comunicar com o servidor.")
     }
-    
 }
 
 async function carregarInstituicoes() {
@@ -52,16 +63,7 @@ async function carregarInstituicoes() {
         const retorno = await fetch('../src/controllers/instituicao/instituicao_get.php');
         const resposta = await retorno.json();
         if (resposta.status === 'ok') {
-            window.instituicoesCache = resposta.data;
-            renderInstituicoes(window.instituicoesCache);
-            const searchInput = document.getElementById('search_instituicao');
-            if (searchInput) {
-                searchInput.addEventListener('input', (e) => {
-                    const termo = e.target.value.toLowerCase();
-                    const filtradas = window.instituicoesCache.filter(inst => inst.nome.toLowerCase().includes(termo));
-                    renderInstituicoes(filtradas);
-                });
-            }
+            renderInstituicoes(resposta.data);
         }
     } catch (e) {
         console.error("Erro ao carregar instituições", e);
@@ -75,4 +77,22 @@ function renderInstituicoes(lista) {
     lista.forEach(inst => {
         select.innerHTML += `<option value="${inst.id}">${inst.nome}</option>`;
     });
+}
+
+async function carregarTurmas(id_instituicao) {
+    try {
+        const retorno = await fetch(`../src/controllers/turma/turma_get.php?id_instituicao=${id_instituicao}`);
+        const resposta = await retorno.json();
+        const select = document.getElementById('id_turma');
+        if (resposta.status === 'ok') {
+            select.innerHTML = '<option value="">Selecione uma turma</option>';
+            resposta.data.forEach(turma => {
+                select.innerHTML += `<option value="${turma.id}">${turma.nome} - ${turma.serie}ª série</option>`;
+            });
+        } else {
+            select.innerHTML = '<option value="">Nenhuma turma encontrada</option>';
+        }
+    } catch (e) {
+        console.error("Erro ao carregar turmas", e);
+    }
 }

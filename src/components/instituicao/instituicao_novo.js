@@ -1,3 +1,7 @@
+document.addEventListener('DOMContentLoaded', async () => {
+    await valida_sessao();
+});
+
 document.getElementById('enviar').addEventListener('click', () => { //"escuta" o clique do botao e automaticamente executa a funcao
     novo(); // a funcao cria uma instituicao nova
 });
