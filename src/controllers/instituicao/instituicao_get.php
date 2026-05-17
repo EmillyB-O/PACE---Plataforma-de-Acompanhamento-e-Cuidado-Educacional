@@ -1,6 +1,9 @@
 <?php
     include_once('../../config/conexao.php');
 
+    session_start();
+    $usuario = $_SESSION['usuario'];
+
     $retorno = [
         'status'    => '',
         'mensagem'  => '',
@@ -12,8 +15,22 @@
         $stmt = $conexao->prepare("SELECT * FROM instituicao WHERE id = ?");
         $stmt->bind_param("i",$_GET['id']);
     }else{
-        // Primeira situação - SEM RECEBER O ID por GET
-        $stmt = $conexao->prepare("SELECT * FROM instituicao");
+        // Para professor: mostrar apenas instituições vinculadas
+        if($usuario['cargo'] == '4'){
+
+            $stmt = $conexao->prepare("SELECT i.*
+                                       FROM Instituicao i
+                                       INNER JOIN Usuario_Instituicao ui
+                                       ON ui.id_instituicao = i.id
+                                       WHERE ui.id_usuario = ?
+            ");
+
+            $stmt->bind_param("i", $usuario['id']);
+
+        }else{
+            //Outros usuarios: mostrar todos
+            $stmt = $conexao->prepare("SELECT * FROM Instituicao");
+        }
     }
     
     $stmt->execute();
