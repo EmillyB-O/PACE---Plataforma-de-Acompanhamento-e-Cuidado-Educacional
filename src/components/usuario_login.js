@@ -28,4 +28,4 @@ async function login(){
     }else{
         alert(resposta.mensagem || 'Credenciais inválidas. Tente novamente');
     }
-}öí
+}
