@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }  
                 var html = '';
-                for(var i = 0; i<result.data.length; i++){
+                for(var i = 0; i < result.data.length; i++){
                     const aviso = result.data[i];
                     const dataEmissao = new Date(aviso.data_emissao).toLocaleString('pt-BR');
                     html += `

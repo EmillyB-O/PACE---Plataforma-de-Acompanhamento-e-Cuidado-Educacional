@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function carregarInstituicoes() {
         try {
-            const response = await fetch('../src/controllers/profissional_get_instituicoes.php');
+            const response = await fetch('../src/controllers/profissional/profissional_get_instituicoes.php');
             const result = await response.json();
             const lista = document.getElementById('lista-instituicoes');
             
