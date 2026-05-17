@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function carregarAvisos(){
         try {
-            const response = await fetch('../src/controllers/profissional_get_avisos.php');
+            const response = await fetch('../src/controllers/profissional/profissional_get_avisos.php');
             const result = await response.json();
             const lista = document.getElementById('lista-avisos');
 
@@ -13,9 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }  
                 var html = '';
-                for(var i = 0; i<result.data.lenght; i++){
+                for(var i = 0; i<result.data.length; i++){
                     const aviso = result.data[i];
-                    const dataEmissao = new Date(aviso.data_emissai).toLocaleString('pt-BR');
+                    const dataEmissao = new Date(aviso.data_emissao).toLocaleString('pt-BR');
                     html += `
                     <a href="aluno.html?id=${aviso.id_aluno}" class="list-group-item list-group-item-action mb-2 rounded">
                         <div class="d-flex w-100 justify-content-between">

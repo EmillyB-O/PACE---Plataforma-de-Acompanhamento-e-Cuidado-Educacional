@@ -3,7 +3,7 @@ session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-include_once("../config/conexao.php");
+include_once("../../config/conexao.php");
 
 $retorno = [
     'status' => 'nok', 
@@ -11,7 +11,7 @@ $retorno = [
     'data' => []
 ];
 
-if(!issset($_SESSION['usuario'])|| $_SESSION['usuario']['cargo'] != '3'){
+if(!isset($_SESSION['usuario'])|| $_SESSION['usuario']['cargo'] != '3'){
     $retorno ['mensagem'] = 'Acesso negato.';
     header('Content-type:application/json;charset:utf-8');
     echo json_encode($retorno);

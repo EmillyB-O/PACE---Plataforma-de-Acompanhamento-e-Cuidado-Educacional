@@ -22,10 +22,10 @@ async function login(){
         const usuarioLogado = resposta.data[0];
         if (usuarioLogado.cargo == '1') {
             window.location.href = 'painel_admin.html';
-        } else {
-            window.location.href = 'index.html'; 
+        } else if(usuarioLogado.cargo == 3){ // Se ele for profissional da saúde
+            window.location.href = 'painel_profissional.html'; 
         }
     }else{
         alert(resposta.mensagem || 'Credenciais inválidas. Tente novamente');
     }
-}
+}öí
