@@ -11,26 +11,24 @@
             background-size: cover;
         }
     </style>
-    <title>Turmas - PACE</title>
+    <title>Seção do Estudante - PACE</title>
     <script src="../src/components/valida_sessao.js"></script>
+    <script src="../src/components/responsavel/secao_estudante.js" defer></script>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg" style="background-color: #004e7a;" data-bs-theme="dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">PACE - Profissional da Saúde</a>
+            <a class="navbar-brand" href="#">PACE</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="painel_profissional.html">Painel</a>
+                        <a class="nav-link" href="index.html">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="profissional_instituicoes.html">Minhas Instituições</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="aluno.html">Alunos</a>
+                        <a class="nav-link" href="secao_estudante.html">Seção do Estudante</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
@@ -43,22 +41,43 @@
     </nav>
 
     <div class="container mt-5">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb bg-light p-3 rounded">
-                <li class="breadcrumb-item"><a href="profissional_instituicoes.html">Instituições</a></li>
-                <li class="breadcrumb-item active" aria-current="page" id="nome-instituicao">Turmas</li>
-            </ol>
-        </nav>
-
-        <h2 class="text-dark mb-4">Turmas</h2>
-        <div class="row" id="lista-turmas"> // Div para exibição de turmas vinculadas ao profissional
-            <div class="col-12">
-                <p class="text-dark">Carregando turmas...</p>
+        <h2 class="mb-4">Meus Estudantes</h2>
+        <div id="estudantes-container" class="row">
+            <!-- Cards dos estudantes serão inseridos aqui -->
+            <div class="text-center w-100">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Carregando...</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="../src/components/profissional/profissional_turmas.js"></script>
+    <!-- Modal para visualização de relatório -->
+    <div class="modal fade" id="relatorioModal" tabindex="-1" aria-labelledby="relatorioModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="relatorioModalLabel">Detalhes do Relatório</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <h6 id="modal-titulo" class="fw-bold"></h6>
+            <p class="text-muted"><small>Emitido por <span id="modal-remetente"></span> em <span id="modal-data"></span></small></p>
+            <hr>
+            <div id="modal-conteudo" style="white-space: pre-wrap;"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            valida_sessao();
+        });
+    </script>
 </body>
 </html>

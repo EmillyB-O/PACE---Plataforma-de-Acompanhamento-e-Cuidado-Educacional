@@ -33,8 +33,8 @@
             if ($nivelLogado == '0' && $cargo != '1') {
                 echo json_encode(['status' => 'nok', 'mensagem' => 'Acesso Negado: Administrador Global só pode cadastrar Administradores.', 'data' => []]); exit;
             }
-            if ($nivelLogado == '1' && $cargo == '1') {
-                echo json_encode(['status' => 'nok', 'mensagem' => 'Acesso Negado: Administrador Institucional não pode cadastrar Administradores.', 'data' => []]); exit;
+            if ($nivelLogado == '1' && ($cargo == '1' || $cargo == '3' || $cargo == '5')) {
+                echo json_encode(['status' => 'nok', 'mensagem' => 'Acesso Negado: Administrador Institucional só tem permissão para cadastrar Pedagogos e Professores.', 'data' => []]); exit;
             }
         }
     }
@@ -142,8 +142,8 @@
             $stmt->execute();
 
         } elseif ($cargo === '3') { // profissional de saude
-            $crm = $_POST['crm'];
-            $crp = $_POST['crp'];
+            $crm = !empty($_POST['crm']) ? trim($_POST['crm']) : null;
+            $crp = !empty($_POST['crp']) ? trim($_POST['crp']) : null;
             $stmt = $conexao->prepare('INSERT INTO Profissional_Saude (id_usuario, crm, crp) VALUES (?, ?, ?)');
             $stmt->bind_param('iss', $idUsuarioGerado, $crm, $crp);
             $stmt->execute();
@@ -189,7 +189,7 @@
 
         $retorno = [
             'status'    => 'nok',
-            'mensagem'  => 'Falha ao inserir o registro: ' . $e->getMessage(),
+            'mensagem'  => obterMensagemErroBanco($e->getMessage(), $e->getCode()),
             'data'      => []
         ];
     }

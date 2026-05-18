@@ -1,4 +1,5 @@
 <?php
+session_start();
 include_once('../config/conexao.php');
 
 $retorno = [
@@ -6,6 +7,11 @@ $retorno = [
     'mensagem' => '',
     'data' => []
 ];
+
+if (!isset($_SESSION['usuario'])) {
+    echo json_encode(['status' => 'nok', 'mensagem' => 'Sessão expirada.']);
+    exit;
+}
 
 $idUsuario = $_GET['id'];
 

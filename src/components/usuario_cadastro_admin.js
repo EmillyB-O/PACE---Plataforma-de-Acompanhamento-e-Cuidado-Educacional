@@ -21,9 +21,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 divNivel.disabled = true;
             }
         } else if (userLogado.nivel_permissao == '1') {
-            // Institucional: Cadastra todo mundo MENOS ADM
+            // Institucional: Cadastra Pedagogo (2) e Professor (4). Oculta Adm (1), Saúde (3) e Responsável (5).
             Array.from(selectCargo.options).forEach(opt => {
-                if (opt.value === '1') {
+                if (opt.value === '1' || opt.value === '3' || opt.value === '5') {
                     opt.style.display = 'none';
                     opt.disabled = true;
                 }
@@ -57,6 +57,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // Listener para o conselho (CRM/CRP) profissional de saúde
+    const conselhoSelect = document.getElementById('conselho');
+    if (conselhoSelect) {
+        conselhoSelect.addEventListener('change', function() {
+            const div_crm = document.getElementById('div_crm');
+            const div_crp = document.getElementById('div_crp');
+
+            if(div_crm) div_crm.style.display = 'none';
+            if(div_crp) div_crp.style.display = 'none';
+
+            if(this.value === 'seletor_crm' && div_crm){
+                div_crm.style.display = 'block';
+                document.getElementById("crp").value = ""; 
+            }else if(this.value === 'seletor_crp' && div_crp){
+                div_crp.style.display = 'block';
+                document.getElementById("crm").value = "";
+            }
+        });
+    }
+
     // Listener para o seletor de cargo
     if (selectCargo) {
         selectCargo.addEventListener('change', function () {
@@ -70,10 +90,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (div_admin) div_admin.style.display = 'none';
             if (div_pedagogo) div_pedagogo.style.display = 'none';
-            if (div_saude) div_saude.style.display = 'none';
             if (div_prof) div_prof.style.display = 'none';
             if (div_responsavel) div_responsavel.style.display = 'none';
             if (div_instituicao_comum) div_instituicao_comum.style.display = 'none';
+
+            if (div_saude) {
+                div_saude.style.display = 'none';
+                const conselhoSelect = document.getElementById('conselho');
+                if (conselhoSelect) conselhoSelect.value = '';
+                const div_crm = document.getElementById('div_crm');
+                const div_crp = document.getElementById('div_crp');
+                if (div_crm) div_crm.style.display = 'none';
+                if (div_crp) div_crp.style.display = 'none';
+            }
 
             // Regra de visibilidade da Instituição
             // Cargos 2 (Pedagogo), 4 (Professor) e 1 (Adm) se o nível for 1 (Institucional)
@@ -178,10 +207,19 @@ async function novo() {
         fd.append('id_instituicao', id_instituicao);
         fd.append('especializacao', document.getElementById('especializacao').value);
     } else if (cargo === '3') { // profissional da saude
+        const conselho = document.getElementById('conselho').value;
+        if (!conselho) {
+            alert("A seleção de um conselho (CRM ou CRP) é obrigatória para Profissional da Saúde.");
+            return;
+        }
         var crm = document.getElementById('crm').value.trim();
         var crp = document.getElementById('crp').value.trim();
-        if (!crm && !crp) {
-            alert("Pelo menos um dos campos (CRM ou CRP) deve ser preenchido para Profissional da Saúde.");
+        if (conselho === 'seletor_crm' && !crm) {
+            alert("O preenchimento do campo CRM é obrigatório.");
+            return;
+        }
+        if (conselho === 'seletor_crp' && !crp) {
+            alert("O preenchimento do campo CRP é obrigatório.");
             return;
         }
         fd.append('crm', crm);
@@ -202,8 +240,7 @@ async function novo() {
 
         const resposta = await retorno.json();
         if (resposta.status == 'ok') {
-            alert('Sucesso: ' + resposta.mensagem);
-            window.location.href = 'painel_admin.html'; 
+            showAlertAndRedirect('Sucesso: ' + resposta.mensagem, 'painel_admin.html');
         } else {
             alert('Erro: ' + resposta.mensagem);
         }

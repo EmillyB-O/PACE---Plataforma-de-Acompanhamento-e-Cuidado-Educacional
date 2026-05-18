@@ -47,8 +47,7 @@ async function novo() {
 
         const resposta = await retorno.json();
         if(resposta.status == 'ok'){
-            alert('Sucesso: ' + resposta.mensagem);
-            window.location.href = 'aluno.html';
+            showAlertAndRedirect('Sucesso: ' + resposta.mensagem, 'aluno.html');
         } else {
             alert('Erro: ' + resposta.mensagem);
         }

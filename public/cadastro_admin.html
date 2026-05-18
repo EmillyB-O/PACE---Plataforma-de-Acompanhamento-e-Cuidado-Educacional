@@ -127,11 +127,22 @@
 
                 <div id="div_saude" style="display: none;" class="mt-3 bg-light p-3 border rounded">
                     <h5>Dados de Profissional da Saúde</h5>
-                    <label for="crm" class="form-label">CRM</label>
-                    <input type="text" class="form-control mb-2" id="crm">
-                    
-                    <label for="crp" class="form-label">CRP</label>
-                    <input type="text" class="form-control" id="crp">
+                    <label for="conselho" class="form-label">Conselho:</label>
+                    <select id="conselho" class="form-select mb-3">
+                        <option value="">Selecione...</option>
+                        <option value="seletor_crm">CRM</option>
+                        <option value="seletor_crp">CRP</option>
+                    </select>
+
+                    <div id="div_crm" style="display: none;">
+                        <label for="crm" class="form-label">CRM</label>
+                        <input type="text" class="form-control mb-2" id="crm">
+                    </div>
+
+                    <div id="div_crp" style="display: none;">
+                        <label for="crp" class="form-label">CRP</label>
+                        <input type="text" class="form-control" id="crp">
+                    </div>
                 </div>
 
                 <div id="div_prof" style="display: none;" class="mt-3 bg-light p-3 border rounded">

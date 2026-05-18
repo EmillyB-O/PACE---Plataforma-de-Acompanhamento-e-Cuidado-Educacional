@@ -1,4 +1,107 @@
-document.getElementById('enviar').addEventListener('click', () => { //"escuta" o clique do botao e automaticamente executa a funcao
+// Carregar SweetAlert2 dinamicamente e sobrescrever window.alert com fila resiliente
+(function() {
+    let alertQueue = [];
+    let swalLoaded = false;
+
+    window.alert = (message) => {
+        if (swalLoaded) {
+            triggerSwalAlert(message);
+        } else {
+            alertQueue.push(message);
+        }
+    };
+
+    window.showAlertAndRedirect = (message, url) => {
+        if (swalLoaded) {
+            triggerSwalRedirect(message, url);
+        } else {
+            alertQueue.push({ message, url });
+        }
+    };
+
+    if (!document.getElementById('sweetalert-js')) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://cdn.jsdelivr.net/npm/sweetalert2@11.10.8/dist/sweetalert2.min.css';
+        link.id = 'sweetalert-css';
+        document.head.appendChild(link);
+
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11.10.8/dist/sweetalert2.all.min.js';
+        script.id = 'sweetalert-js';
+        document.head.appendChild(script);
+
+        script.onload = () => {
+            swalLoaded = true;
+            alertQueue.forEach(item => {
+                if (typeof item === 'object' && item !== null) {
+                    triggerSwalRedirect(item.message, item.url);
+                } else {
+                    triggerSwalAlert(item);
+                }
+            });
+            alertQueue = [];
+        };
+    }
+
+    function triggerSwalAlert(message) {
+        let icon = 'info';
+        let title = 'Aviso';
+        const lower = String(message).toLowerCase();
+        
+        if (lower.includes('erro') || lower.includes('não foi') || lower.includes('negado') || lower.includes('obrigatório') || lower.includes('inválido') || lower.includes('falhou')) {
+            icon = 'error';
+            title = 'Erro';
+        } else if (lower.includes('sucesso') || lower.includes('salvo') || lower.includes('ativado') || lower.includes('cadastrado') || lower.includes('criado') || lower.includes('excluído') || lower.includes('vinculado') || lower.includes('aprovado') || lower.includes('recusado')) {
+            icon = 'success';
+            title = 'Sucesso';
+        } else if (lower.includes('atenção') || lower.includes('cuidado') || lower.includes('aviso') || lower.includes('certeza')) {
+            icon = 'warning';
+            title = 'Atenção';
+        }
+        
+        Swal.fire({
+            title: title,
+            text: message,
+            icon: icon,
+            confirmButtonColor: '#004e7a',
+            confirmButtonText: 'OK'
+        });
+    }
+
+    function triggerSwalRedirect(message, url) {
+        let icon = 'info';
+        let title = 'Aviso';
+        const lower = String(message).toLowerCase();
+        
+        if (lower.includes('erro') || lower.includes('não foi') || lower.includes('negado') || lower.includes('obrigatório') || lower.includes('inválido') || lower.includes('falhou')) {
+            icon = 'error';
+            title = 'Erro';
+        } else if (lower.includes('sucesso') || lower.includes('salvo') || lower.includes('ativado') || lower.includes('cadastrado') || lower.includes('criado') || lower.includes('excluído') || lower.includes('vinculado') || lower.includes('aprovado') || lower.includes('recusado')) {
+            icon = 'success';
+            title = 'Sucesso';
+        } else if (lower.includes('atenção') || lower.includes('cuidado') || lower.includes('aviso') || lower.includes('certeza')) {
+            icon = 'warning';
+            title = 'Atenção';
+        }
+        
+        Swal.fire({
+            title: title,
+            text: message,
+            icon: icon,
+            confirmButtonColor: '#004e7a',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            if (url === 'reload') {
+                window.location.reload();
+            } else if (url) {
+                window.location.href = url;
+            }
+        });
+    }
+})();
+
+document.getElementById('enviar').addEventListener('click', () => {
     novo(); // a funcao cria um adm novo (NESSE CASO É UM ADM, poderia ser um usuario novo qualquer)
 });
 
@@ -22,18 +125,41 @@ saude.addEventListener('change', function() {
     }
 });
 
+let instituicoesCarregadas = false;
+
+async function carregarInstituicoes() {
+    if (instituicoesCarregadas) return;
+    try {
+        const response = await fetch('../src/controllers/instituicao/instituicao_get.php');
+        const result = await response.json();
+        if (result.status === 'ok') {
+            const select = document.getElementById('instituicao');
+            let html = '<option value="">Selecione uma instituição de vínculo...</option>';
+            result.data.forEach(inst => {
+                html += `<option value="${inst.id}">${inst.nome}</option>`;
+            });
+            select.innerHTML = html;
+            instituicoesCarregadas = true;
+        }
+    } catch (e) {
+        console.error("Erro ao carregar instituições:", e);
+    }
+}
+
 seletor.addEventListener('change', function() {
     const div_admin = document.getElementById('div_admin');
     const div_pedagogo = document.getElementById('div_pedagogo');
     const div_saude = document.getElementById('div_saude');
     const div_prof = document.getElementById('div_prof');
     const div_responsavel = document.getElementById('div_responsavel');
+    const div_instituicao_cadastro = document.getElementById('div_instituicao_cadastro');
 
     if(div_admin) div_admin.style.display = 'none';
     if(div_pedagogo) div_pedagogo.style.display = 'none';
     if(div_saude) div_saude.style.display = 'none';
     if(div_prof) div_prof.style.display = 'none';
     if(div_responsavel) div_responsavel.style.display = 'none';
+    if(div_instituicao_cadastro) div_instituicao_cadastro.style.display = 'none';
 
     if(this.value === '1' && div_admin){
         div_admin.style.display = 'block';
@@ -41,10 +167,14 @@ seletor.addEventListener('change', function() {
         div_pedagogo.style.display = 'block';
     }else if(this.value === '3' && div_saude){
         div_saude.style.display = 'block';
+        if(div_instituicao_cadastro) div_instituicao_cadastro.style.display = 'block';
+        carregarInstituicoes();
     }else if(this.value === '4' && div_prof){
         div_prof.style.display = 'block';
     }else if(this.value === '5' && div_responsavel){
         div_responsavel.style.display = 'block';
+        if(div_instituicao_cadastro) div_instituicao_cadastro.style.display = 'block';
+        carregarInstituicoes();
     }
 });
 
@@ -64,10 +194,10 @@ async function novo() {
     const fd = new FormData();
     fd.append('nome', nome);
     fd.append('email', email);
-    fd.append('cpf', cpf);
+    fd.append('cpf', cpf.replace(/\D/g, ''));
     fd.append('senha', senha);
     fd.append('cargo', cargo);
-    fd.append('telefone', telefone);
+    fd.append('telefone', telefone.replace(/\D/g, ''));
 
     if(cargo === '1'){
         fd.append('nivel_permissao', document.getElementById('nivel_permissao').value);
@@ -77,12 +207,27 @@ async function novo() {
         fd.append('especializacao', document.getElementById('especializacao').value);
 
     }else if(cargo === '3'){//profissional da saude
-        var crm = document.getElementById('crm').value.trim();
-        var crp = document.getElementById('crp').value.trim();
-        if (!crm && !crp) {
-            alert("Pelo menos um dos campos (CRM ou CRP) deve ser preenchido para Profissional da Saúde.");
+        const conselho = document.getElementById('conselho').value;
+        if (!conselho) {
+            alert("A seleção de um conselho (CRM ou CRP) é obrigatória para Profissional da Saúde.");
             return;
         }
+        var crm = document.getElementById('crm').value.trim();
+        var crp = document.getElementById('crp').value.trim();
+        if (conselho === 'seletor_crm' && !crm) {
+            alert("O preenchimento do campo CRM é obrigatório.");
+            return;
+        }
+        if (conselho === 'seletor_crp' && !crp) {
+            alert("O preenchimento do campo CRP é obrigatório.");
+            return;
+        }
+        const id_instituicao = document.getElementById('instituicao').value;
+        if (!id_instituicao) {
+            alert("A escolha de uma instituição de vínculo é obrigatória.");
+            return;
+        }
+        fd.append('id_instituicao', id_instituicao);
         fd.append('crm', crm);
         fd.append('crp', crp);
 
@@ -90,6 +235,12 @@ async function novo() {
         fd.append('instituicao', document.getElementById('instituicao').value);
         fd.append('materia', document.getElementById('materia').value); 
     }else if(cargo === '5'){//responsavel legal
+        const id_instituicao = document.getElementById('instituicao').value;
+        if (!id_instituicao) {
+            alert("A escolha de uma instituição de vínculo é obrigatória.");
+            return;
+        }
+        fd.append('id_instituicao', id_instituicao);
         fd.append('data_nasc', document.getElementById('data_nasc').value);
     }
 
@@ -104,8 +255,7 @@ async function novo() {
 
         const resposta = await retorno.json();
         if(resposta.status == 'ok'){
-            alert('Sucesso: ' + resposta.mensagem);
-            window.location.href = 'index.html'; // direciona pra home apos criar acc
+            showAlertAndRedirect('Sucesso: ' + resposta.mensagem, 'index.html');
         }else{
             alert('Erro: ' + resposta.mensagem);
         }
@@ -115,3 +265,137 @@ async function novo() {
     }
     
 }
+
+function applyInputGuidelines() {
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        const id = input.id ? input.id.toLowerCase() : '';
+        const name = input.name ? input.name.toLowerCase() : '';
+        
+        // Define quais campos são obrigatórios no sistema
+        const isMandatory = 
+            id === 'nome' || 
+            id === 'email' || 
+            id === 'cpf' || 
+            id === 'senha' || 
+            id === 'telefone' || 
+            id === 'cargo' ||
+            id === 'id_instituicao' ||
+            id === 'instituicao' ||
+            id === 'id_turma' ||
+            id === 'materia' ||
+            id === 'especializacao' ||
+            id === 'nivel_permissao' ||
+            input.hasAttribute('required');
+            
+        if (isMandatory) {
+            input.setAttribute('required', 'true');
+            
+            // Procura o label correspondente
+            let label = document.querySelector(`label[for="${input.id}"]`);
+            if (!label) {
+                const prev = input.previousElementSibling;
+                if (prev && prev.tagName === 'LABEL') {
+                    label = prev;
+                }
+            }
+            
+            if (label && !label.innerHTML.includes('*')) {
+                label.innerHTML += ' <span style="color: #dc3545;" title="Campo obrigatório">*</span>';
+            }
+        }
+
+        if (input.type === 'hidden' || input.type === 'button' || input.type === 'submit' || input.type === 'checkbox' || input.type === 'radio') return;
+
+        // Aplica as máscaras de forma prioritária e independente de placeholders
+        if (id.includes('cpf') || name.includes('cpf')) {
+            input.setAttribute('maxlength', '14');
+            input.removeEventListener('input', handleCPFInput);
+            input.addEventListener('input', handleCPFInput);
+        }
+        else if (id.includes('tel') || name.includes('tel') || input.type === 'tel') {
+            input.setAttribute('maxlength', '15');
+            input.removeEventListener('input', handlePhoneInput);
+            input.addEventListener('input', handlePhoneInput);
+        }
+
+        const placeholder = input.getAttribute('placeholder');
+        if (placeholder && placeholder.trim() !== '') return;
+
+        if (id.includes('nome') || name.includes('nome')) {
+            if (id.includes('aluno') || name.includes('aluno')) {
+                input.setAttribute('placeholder', 'Ex: Nome Completo do Estudante');
+            } else {
+                input.setAttribute('placeholder', 'Ex: João Silva de Souza');
+            }
+        }
+        else if (id.includes('email') || name.includes('email') || input.type === 'email') {
+            input.setAttribute('placeholder', 'Ex: seu.email@exemplo.com');
+        }
+        else if (id.includes('cpf') || name.includes('cpf')) {
+            input.setAttribute('placeholder', 'Ex: 000.000.000-00');
+        }
+        else if (id.includes('senha') || name.includes('senha') || input.type === 'password') {
+            input.setAttribute('placeholder', 'Digite uma senha segura');
+        }
+        else if (id.includes('tel') || name.includes('tel') || input.type === 'tel') {
+            input.setAttribute('placeholder', 'Ex: (11) 99999-9999');
+        }
+        else if (id.includes('crm')) {
+            input.setAttribute('placeholder', 'Ex: 123456/SP');
+        }
+        else if (id.includes('crp')) {
+            input.setAttribute('placeholder', 'Ex: 06/123456');
+        }
+        else if (id.includes('especializacao') || name.includes('especializacao')) {
+            input.setAttribute('placeholder', 'Ex: Psicopedagogia');
+        }
+        else if (id.includes('materia') || name.includes('materia')) {
+            input.setAttribute('placeholder', 'Ex: Matemática, Português');
+        }
+        else if (id.includes('serie') || name.includes('serie')) {
+            input.setAttribute('placeholder', 'Ex: 5 (5º ano)');
+        }
+        else if (id.includes('matricula') || name.includes('matricula')) {
+            input.setAttribute('placeholder', 'Ex: 2026123456');
+        }
+        else if (id.includes('nivel') || name.includes('nivel')) {
+            input.setAttribute('placeholder', '0 para Global ou 1 para Institucional');
+        }
+    });
+}
+
+function handlePhoneInput(e) {
+    let value = e.target.value.replace(/\D/g, "");
+    if (value.length > 11) {
+        value = value.slice(0, 11);
+    }
+    if (value.length > 10) {
+        value = value.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+    } else if (value.length > 6) {
+        value = value.replace(/^(\d{2})(\d{4})(\d{0,4})$/, "($1) $2-$3");
+    } else if (value.length > 2) {
+        value = value.replace(/^(\d{2})(\d{0,4})$/, "($1) $2");
+    } else if (value.length > 0) {
+        value = value.replace(/^(\d*)$/, "($1");
+    }
+    e.target.value = value;
+}
+
+function handleCPFInput(e) {
+    let value = e.target.value.replace(/\D/g, "");
+    if (value.length > 11) {
+        value = value.slice(0, 11);
+    }
+    if (value.length > 9) {
+        value = value.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "$1.$2.$3-$4");
+    } else if (value.length > 6) {
+        value = value.replace(/^(\d{3})(\d{3})(\d{0,3})$/, "$1.$2.$3");
+    } else if (value.length > 3) {
+        value = value.replace(/^(\d{3})(\d{0,3})$/, "$1.$2");
+    }
+    e.target.value = value;
+}
+
+// Chamar imediatamente
+applyInputGuidelines();

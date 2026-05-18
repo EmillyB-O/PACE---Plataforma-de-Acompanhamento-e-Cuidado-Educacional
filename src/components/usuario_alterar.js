@@ -57,8 +57,10 @@ async function buscar(id) {
         document.getElementById('nome').value = registro.nome;
         document.getElementById('email').value = registro.email;
         document.getElementById('cpf').value = registro.cpf;
+        document.getElementById('cpf').dispatchEvent(new Event("input"));
         document.getElementById('cargo').value = registro.cargo;
         document.getElementById('telefone').value = registro.telefone;
+        document.getElementById('telefone').dispatchEvent(new Event("input"));
         document.getElementById('id').value = id;
 
         // Pré-seleciona a instituição (primeira da lista por enquanto)
@@ -71,8 +73,13 @@ async function buscar(id) {
         } else if (registro.cargo === '2') {
             document.getElementById('especializacao').value = registro.especializacao;
         } else if (registro.cargo === '3') {
-            document.getElementById('crm').value = registro.crm;
-            document.getElementById('crp').value = registro.crp;
+            document.getElementById('crm').value = registro.crm || '';
+            document.getElementById('crp').value = registro.crp || '';
+            
+            const wCrm = document.getElementById('wrapper_crm');
+            const wCrp = document.getElementById('wrapper_crp');
+            if (wCrm) wCrm.style.display = (registro.crm && registro.crm.trim() !== '') ? 'block' : 'none';
+            if (wCrp) wCrp.style.display = (registro.crp && registro.crp.trim() !== '') ? 'block' : 'none';
         } else if (registro.cargo === '4') {
             document.getElementById('materia').value = registro.materia;
         } else if (registro.cargo === '5') {
@@ -83,8 +90,7 @@ async function buscar(id) {
         document.getElementById("cargo").dispatchEvent(evento);
 
     } else {
-        alert('Erro: ' + resposta.mensagem);
-        window.location.href = 'painel_admin.html';
+        showAlertAndRedirect('Erro: ' + resposta.mensagem, 'painel_admin.html');
     }
 }
 
@@ -132,10 +138,10 @@ async function alterar() {
     const fd = new FormData();
     fd.append('nome', document.getElementById('nome').value.trim());
     fd.append('email', document.getElementById('email').value.trim());
-    fd.append('cpf', document.getElementById('cpf').value.trim());
+    fd.append('cpf', document.getElementById('cpf').value.replace(/\D/g, ''));
     fd.append('senha', document.getElementById('senha').value.trim());
     fd.append('cargo', document.getElementById('cargo').value);
-    fd.append('telefone', document.getElementById('telefone').value.trim());
+    fd.append('telefone', document.getElementById('telefone').value.replace(/\D/g, ''));
 
     const cargo = document.getElementById('cargo').value;
     const id_inst = document.getElementById('id_instituicao').value;
@@ -159,12 +165,6 @@ async function alterar() {
         fd.append('crp', crp);
 
     } else if (cargo === '4') {//professor
-        var cndb = document.getElementById('cndb').value.trim();
-        if (!cndb) {
-            alert("O campo CNDB é obrigatório para Professor.");
-            return;
-        }
-        fd.append('cndb', cndb);
         fd.append('materia', document.getElementById('materia').value);
         fd.append('id_instituicao', id_inst);
     } else if (cargo === '5') {
@@ -175,8 +175,7 @@ async function alterar() {
         const retorno = await fetch('../src/controllers/usuario_alterar.php?id=' + id, { method: 'POST', body: fd });
         const resposta = await retorno.json();
         if (resposta.status == 'ok') {
-            alert('Sucesso: ' + resposta.mensagem);
-            window.location.href = 'painel_admin.html';
+            showAlertAndRedirect('Sucesso: ' + resposta.mensagem, 'painel_admin.html');
         } else { alert('Erro: ' + resposta.mensagem); }
     } catch (e) { alert("Erro de comunicação."); }
 }

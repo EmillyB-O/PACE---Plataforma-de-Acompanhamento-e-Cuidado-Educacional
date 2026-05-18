@@ -35,22 +35,40 @@
         if ($nivel_permissao == '0') {
             $query .= " AND u.cargo = '1' "; // Global só vê administradores
         } elseif ($nivel_permissao == '1') {
-            // Institutional Admin: Vê apenas usuários da sua instituição ou a si mesmo
+            // Institutional Admin: Vê apenas usuários vinculados à sua instituição ou a si mesmo
             $id_inst_logado = $usuarioLogado['id_instituicao']; // Pega da sessão
             $id_logado = intval($usuarioLogado['id']);
             
-            // Subquery para filtrar por instituição vinculada
-            $query .= " AND (u.id IN (SELECT id_usuario FROM Usuario_Instituicao WHERE id_instituicao = $id_inst_logado) OR u.id = $id_logado) ";
+            $query .= " AND (
+                u.id IN (SELECT id_usuario FROM Usuario_Instituicao WHERE id_instituicao = $id_inst_logado) 
+                OR u.id = $id_logado
+            ) ";
             $query .= " AND (u.cargo != '1' OR u.id = $id_logado) "; // Não vê outros ADMs
         }
     }
 
-    if(isset($_GET['id'])){
+    $params = [];
+    $types = "";
+
+    if (isset($_GET['id'])) {
         $query .= " AND u.id = ?";
-        $stmt = $conexao->prepare($query);
-        $stmt->bind_param("i", $_GET['id']);
-    }else{
-        $stmt = $conexao->prepare($query);
+        $params[] = $_GET['id'];
+        $types .= "i";
+    }
+    if (isset($_GET['cargo'])) {
+        $query .= " AND u.cargo = ?";
+        $params[] = $_GET['cargo'];
+        $types .= "s";
+    }
+    if (isset($_GET['status'])) {
+        $query .= " AND u.status = ?";
+        $params[] = $_GET['status'];
+        $types .= "s";
+    }
+
+    $stmt = $conexao->prepare($query);
+    if (count($params) > 0) {
+        $stmt->bind_param($types, ...$params);
     }
     
     $stmt->execute();

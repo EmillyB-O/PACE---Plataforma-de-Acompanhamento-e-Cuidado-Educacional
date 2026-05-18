@@ -2,7 +2,7 @@
     include_once('../../config/conexao.php');
 
     session_start();
-    $usuario = $_SESSION['usuario'];
+    $usuario = isset($_SESSION['usuario']) ? $_SESSION['usuario'] : null;
 
     $retorno = [
         'status'    => '',
@@ -16,7 +16,7 @@
         $stmt->bind_param("i",$_GET['id']);
     }else{
         // Para professor: mostrar apenas instituições vinculadas
-        if($usuario['cargo'] == '4'){
+        if($usuario && $usuario['cargo'] == '4'){
 
             $stmt = $conexao->prepare("SELECT i.*
                                        FROM Instituicao i

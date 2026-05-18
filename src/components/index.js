@@ -23,8 +23,7 @@ async function excluir(id) {
     const retorno = await fetch('../src/controllers/usuario_excluir.php?id='+id);
     const resposta = await retorno.json();
     if(resposta.status == 'ok'){
-        alert(resposta.mensagem);
-        window.location.reload();
+        showAlertAndRedirect(resposta.mensagem, 'reload');
     }else{
         alert(resposta.mensagem);
     }
@@ -34,8 +33,7 @@ async function aprovar(id) {
     const retorno = await fetch('../src/controllers/usuario_aprovar.php?id='+id);
     const resposta = await retorno.json();
     if(resposta.status == 'ok'){
-        alert(resposta.mensagem);
-        window.location.reload();
+        showAlertAndRedirect(resposta.mensagem, 'reload');
     }else{
         alert(resposta.mensagem);
     }
@@ -45,8 +43,7 @@ async function recusar(id) {
     const retorno = await fetch('../src/controllers/usuario_recusar.php?id='+id);
     const resposta = await retorno.json();
     if(resposta.status == 'ok'){
-        alert(resposta.mensagem);
-        window.location.reload();
+        showAlertAndRedirect(resposta.mensagem, 'reload');
     }else{
         alert(resposta.mensagem);
     }

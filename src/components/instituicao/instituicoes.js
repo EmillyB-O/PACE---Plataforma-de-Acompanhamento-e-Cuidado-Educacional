@@ -4,7 +4,7 @@ async function iniciar (){
     await valida_sessao();
 
     const usuario = window.usuarioLogado;
-    const isAdmin = usuario.cargo === 1;
+    const isAdmin = usuario.cargo == 1;
 
     if(!isAdmin){
         document.getElementById('novo').style.display = 'none';
@@ -51,7 +51,7 @@ async function excluir(id) {
 function preencherTabela(tabela){
     // Para verificar se usuário é adm antes de mostrar os botões alterar e excluir
     const usuario = window.usuarioLogado;
-    const isAdmin = usuario.cargo === 1;
+    const isAdmin = usuario.cargo == 1;
 
     var html = `
         <table class="table table-striped table-hover mt-3">

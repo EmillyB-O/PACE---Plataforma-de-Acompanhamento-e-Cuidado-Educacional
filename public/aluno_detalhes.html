@@ -1,11 +1,130 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes do aluno</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="../src/assets/css/style.css">
+    <style>
+        body {
+            background-image: url(../src/assets/img/fundo3.png);
+            background-size: cover;
+        }
+    </style>
+    <title>Detalhes do Aluno - PACE</title>
 </head>
 <body>
-    <p>AQUI MOSTRARÁ OS DETALHES DO ALUNO</p>
+    <nav class="navbar navbar-expand-lg" style="background-color: #004e7a;" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">PACE - Detalhes do Aluno</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="aluno.html">Alunos</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-outline-warning" onclick="logoff()">Sair</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 card p-4 shadow text-dark">
+                <h3 class="mb-4 text-primary fw-bold" id="detalhe-nome">Carregando...</h3>
+                <hr>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <span class="fw-bold text-muted small d-block">Matrícula</span>
+                        <span class="fs-5" id="detalhe-matricula">-</span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="fw-bold text-muted small d-block">Série</span>
+                        <span class="fs-5" id="detalhe-serie">-</span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <span class="fw-bold text-muted small d-block">Data de Nascimento</span>
+                        <span class="fs-5" id="detalhe-nascimento">-</span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="fw-bold text-muted small d-block">Status</span>
+                        <span class="fs-5 fw-bold" id="detalhe-status">-</span>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <span class="fw-bold text-muted small d-block">Turma</span>
+                        <span class="fs-5" id="detalhe-turma">-</span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="fw-bold text-muted small d-block">Instituição</span>
+                        <span class="fs-5" id="detalhe-instituicao">-</span>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO DE RELATÓRIOS DO ESTUDANTE -->
+                <div class="mt-4 border-top pt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="fw-bold mb-0" style="color: #004e7a;">Relatórios de Acompanhamento</h4>
+                        <button type="button" class="btn btn-success btn-sm" id="btn-novo-relatorio" style="display: none;" data-bs-toggle="modal" data-bs-target="#modalNovoRelatorio">
+                            <b>+ Adicionar Relatório</b>
+                        </button>
+                    </div>
+                    
+                    <div id="lista-relatorios" class="list-group mt-2">
+                        <p class="text-muted small">Carregando relatórios...</p>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="button" class="btn btn-secondary" onclick="window.history.back()">Voltar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Novo Relatório -->
+    <div class="modal fade" id="modalNovoRelatorio" tabindex="-1" aria-labelledby="modalNovoRelatorioLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content text-dark">
+                <div class="modal-header text-light" style="background-color: #004e7a;">
+                    <h5 class="modal-title" id="modalNovoRelatorioLabel" style="color: #fecf5d;"><b>Adicionar Novo Relatório</b></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-novo-relatorio">
+                        <div class="mb-3">
+                            <label for="relatorio-titulo" class="form-label">Título do Relatório</label>
+                            <input type="text" id="relatorio-titulo" class="form-control" placeholder="Ex: Avaliação de Progresso de Leitura">
+                        </div>
+                        <div class="mb-3">
+                            <label for="relatorio-conteudo" class="form-label">Conteúdo do Relatório</label>
+                            <textarea id="relatorio-conteudo" class="form-control" rows="5" placeholder="Descreva aqui detalhadamente a evolução pedagógica, médica ou de comportamento observada no aluno..."></textarea>
+                        </div>
+                        <button type="button" class="btn btn-success w-100" id="btn-salvar-relatorio">Salvar Relatório</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../src/components/valida_sessao.js"></script>
+    <script src="../src/components/aluno/aluno_detalhes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>

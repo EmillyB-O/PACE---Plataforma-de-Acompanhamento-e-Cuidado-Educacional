@@ -68,6 +68,70 @@
         </div>
     </div>
 
+    <!-- Modal de Vinculação -->
+    <div class="modal fade" id="modalVincular" tabindex="-1" aria-labelledby="modalVincularLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content text-dark">
+                <div class="modal-header text-light" style="background-color: #004e7a;">
+                    <h5 class="modal-title" id="modalVincularLabel" style="color: #fecf5d;"><b>Gerenciar Vínculos do Aluno</b></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="vincular-id-aluno">
+                    
+                    <div class="row">
+                        <!-- Coluna Novo Vínculo -->
+                        <div class="col-md-6 border-end">
+                            <h6 class="fw-bold mb-3" style="color: #004e7a;">Adicionar Novo Vínculo</h6>
+                            
+                            <div class="mb-3">
+                                <label for="vincular-cargo" class="form-label">Tipo de Vínculo</label>
+                                <select id="vincular-cargo" class="form-select">
+                                    <option value="">Selecione...</option>
+                                    <option value="3">Profissional da Saúde</option>
+                                    <option value="5">Responsável Legal</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="vincular-usuario" class="form-label">Usuário</label>
+                                <select id="vincular-usuario" class="form-select" disabled>
+                                    <option value="">Selecione um tipo primeiro...</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3" id="div-parentesco" style="display: none;">
+                                <label for="vincular-parentesco" class="form-label">Grau de Parentesco</label>
+                                <input type="text" id="vincular-parentesco" class="form-control" placeholder="Ex: Pai, Mãe, Tio...">
+                            </div>
+                            
+                            <button type="button" class="btn btn-success w-100" id="btn-salvar-vinculo">Vincular Aluno</button>
+                        </div>
+                        
+                        <!-- Coluna Vínculos Atuais -->
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3" style="color: #004e7a;">Vínculos Atuais</h6>
+                            
+                            <div class="mb-3">
+                                <span class="fw-bold text-muted small">Profissionais da Saúde:</span>
+                                <div id="lista-vinculos-prof" class="list-group mt-2">
+                                    <p class="text-muted small">Nenhum profissional vinculado.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <span class="fw-bold text-muted small">Responsáveis Legais:</span>
+                                <div id="lista-vinculos-resp" class="list-group mt-2">
+                                    <p class="text-muted small">Nenhum responsável vinculado.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="../src/components/valida_sessao.js"></script>
     <script src="../src/components/aluno/aluno.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>

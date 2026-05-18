@@ -74,7 +74,8 @@ if (isset($_GET['id'])) {
             $stmt->bind_param('si', $especializacao, $idEdit);
             $stmt->execute();
         } elseif ($cargo === '3') {
-            $crm = $_POST['crm']; $crp = $_POST['crp'];
+            $crm = !empty($_POST['crm']) ? trim($_POST['crm']) : null;
+            $crp = !empty($_POST['crp']) ? trim($_POST['crp']) : null;
             $stmt = $conexao->prepare('UPDATE Profissional_Saude SET crm = ?, crp = ? WHERE id_usuario = ?');
             $stmt->bind_param('ssi', $crm, $crp, $idEdit);
             $stmt->execute();
@@ -112,7 +113,7 @@ if (isset($_GET['id'])) {
 
     } catch (mysqli_sql_exception $e) {
         $conexao->rollback();
-        $retorno = ['status' => 'nok', 'mensagem' => 'Erro ao alterar: ' . $e->getMessage()];
+        $retorno = ['status' => 'nok', 'mensagem' => obterMensagemErroBanco($e->getMessage(), $e->getCode())];
     }
 } else {
     $retorno = ['status' => 'nok', 'mensagem' => 'ID não informado.'];
