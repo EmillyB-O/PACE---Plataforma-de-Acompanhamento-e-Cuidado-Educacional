@@ -90,7 +90,7 @@
                     </div>
                     <div class="col-md-6">
                         <label for="cargo" class="form-label">Cargo (Tipo de Usuário)</label>
-                        <select class="form-select" id="cargo">
+                        <select class="form-select" id="cargo" disabled>
                             <option value="">Selecione...</option>
                             <option value="1">Administrador</option>
                             <option value="2">Pedagogo</option>
@@ -124,11 +124,15 @@
 
                 <div id="div_saude" style="display: none;" class="mt-3 bg-light p-3 border rounded">
                     <h5>Dados de Profissional da Saúde</h5>
-                    <label for="crm" class="form-label">CRM</label>
-                    <input type="text" class="form-control mb-2" id="crm">
-                    
-                    <label for="crp" class="form-label">CRP</label>
-                    <input type="text" class="form-control" id="crp">
+                    <div class="div_crm">
+                        <label for="crm" class="form-label">CRM</label>
+                        <input type="text" class="form-control mb-2" id="crm" disabled>
+                    </div>
+
+                    <div class="div_crp">
+                        <label for="crp" class="form-label">CRP</label>
+                        <input type="text" class="form-control" id="crp" disabled>
+                    </div>
                 </div>
 
                 <div id="div_prof" style="display: none;" class="mt-3 bg-light p-3 border rounded">

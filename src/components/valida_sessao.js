@@ -41,6 +41,21 @@ async function valida_sessao() {
             return;
         }
 
+        // Para professor
+        if (cargo === '4') {
+            if (
+                url.includes('instituicao_cadastrar') ||
+                url.includes('instituicao_alterar') ||
+                url.includes('turma_cadastrar') ||
+                url.includes('turma_alterar') ||
+                url.includes('aluno_cadastrar') ||
+                url.includes('aluno_alterar')
+            ) {
+                window.location.href = 'index.html'
+                return;
+            }
+        }
+
         // Configurar Navbar baseada no Nível
         const configureNavbar = () => {
             const links = document.querySelectorAll('.nav-link');

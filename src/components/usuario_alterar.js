@@ -147,10 +147,24 @@ async function alterar() {
     } else if (cargo === '2') {
         fd.append('especializacao', document.getElementById('especializacao').value);
         fd.append('id_instituicao', id_inst);
-    } else if (cargo === '3') {
-        fd.append('crm', document.getElementById('crm').value);
-        fd.append('crp', document.getElementById('crp').value);
-    } else if (cargo === '4') {
+    } else if (cargo === '3') {//profissional da saude
+        var crm = document.getElementById('crm').value.trim();
+        var crp = document.getElementById('crp').value.trim();
+        if (!crm && !crp) {
+            alert("Pelo menos um dos campos (CRM ou CRP) deve ser preenchido para Profissional da Saúde.");
+            return;
+        }
+
+        fd.append('crm', crm);
+        fd.append('crp', crp);
+
+    } else if (cargo === '4') {//professor
+        var cndb = document.getElementById('cndb').value.trim();
+        if (!cndb) {
+            alert("O campo CNDB é obrigatório para Professor.");
+            return;
+        }
+        fd.append('cndb', cndb);
         fd.append('materia', document.getElementById('materia').value);
         fd.append('id_instituicao', id_inst);
     } else if (cargo === '5') {
