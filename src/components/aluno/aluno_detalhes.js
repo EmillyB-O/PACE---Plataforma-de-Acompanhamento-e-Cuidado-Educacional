@@ -138,6 +138,110 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    async function carregarDestinatarios() {
+        const cargoLogado = window.usuarioLogado ? String(window.usuarioLogado.cargo) : null;
+        if (!cargoLogado || (cargoLogado !== '2' && cargoLogado !== '3' && cargoLogado !== '4')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`../src/controllers/relatorio/relatorio_destinatarios.php?id_aluno=${id}`);
+            const result = await response.json();
+
+            if (result.status === 'ok') {
+                const selectEl = document.getElementById('relatorio-recebedor');
+                if (!selectEl) return;
+                
+                selectEl.innerHTML = '<option value="">Selecione o destinatário...</option>';
+                
+                const { pedagogos, professores, responsaveis } = result.data;
+                let temOpcoes = false;
+
+                // Regra Professor (cargo 4): Envia para Pedagogos
+                if (cargoLogado === '4') {
+                    if (pedagogos && pedagogos.length > 0) {
+                        const group = document.createElement('optgroup');
+                        group.label = 'Pedagogos';
+                        pedagogos.forEach(p => {
+                            const opt = document.createElement('option');
+                            opt.value = p.id;
+                            opt.textContent = p.nome;
+                            group.appendChild(opt);
+                            temOpcoes = true;
+                        });
+                        selectEl.appendChild(group);
+                    }
+                }
+                // Regra Pedagogo (cargo 2): Envia para Responsáveis Legais
+                else if (cargoLogado === '2') {
+                    if (responsaveis && responsaveis.length > 0) {
+                        const group = document.createElement('optgroup');
+                        group.label = 'Responsáveis Legais';
+                        responsaveis.forEach(r => {
+                            const opt = document.createElement('option');
+                            opt.value = r.id;
+                            opt.textContent = `${r.nome} (${r.parentesco || 'Responsável'})`;
+                            group.appendChild(opt);
+                            temOpcoes = true;
+                        });
+                        selectEl.appendChild(group);
+                    }
+                }
+                // Regra Profissional de Saúde (cargo 3): Envia para Professores, Pedagogos e Responsáveis
+                else if (cargoLogado === '3') {
+                    if (professores && professores.length > 0) {
+                        const group = document.createElement('optgroup');
+                        group.label = 'Professores';
+                        professores.forEach(p => {
+                            const opt = document.createElement('option');
+                            opt.value = p.id;
+                            opt.textContent = `${p.nome} (${p.materia || 'Professor'})`;
+                            group.appendChild(opt);
+                            temOpcoes = true;
+                        });
+                        selectEl.appendChild(group);
+                    }
+                    if (pedagogos && pedagogos.length > 0) {
+                        const group = document.createElement('optgroup');
+                        group.label = 'Pedagogos';
+                        pedagogos.forEach(p => {
+                            const opt = document.createElement('option');
+                            opt.value = p.id;
+                            opt.textContent = p.nome;
+                            group.appendChild(opt);
+                            temOpcoes = true;
+                        });
+                        selectEl.appendChild(group);
+                    }
+                    if (responsaveis && responsaveis.length > 0) {
+                        const group = document.createElement('optgroup');
+                        group.label = 'Responsáveis Legais';
+                        responsaveis.forEach(r => {
+                            const opt = document.createElement('option');
+                            opt.value = r.id;
+                            opt.textContent = `${r.nome} (${r.parentesco || 'Responsável'})`;
+                            group.appendChild(opt);
+                            temOpcoes = true;
+                        });
+                        selectEl.appendChild(group);
+                    }
+                }
+
+                if (temOpcoes) {
+                    document.getElementById('container-recebedor').style.display = 'block';
+                } else {
+                    const opt = document.createElement('option');
+                    opt.disabled = true;
+                    opt.textContent = 'Nenhum destinatário disponível';
+                    selectEl.appendChild(opt);
+                    document.getElementById('container-recebedor').style.display = 'block';
+                }
+            }
+        } catch (e) {
+            console.error("Erro ao carregar destinatários:", e);
+        }
+    }
+
     // Ação de Salvar Relatório
     const btnSalvar = document.getElementById('btn-salvar-relatorio');
     if (btnSalvar) {
@@ -158,6 +262,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             formData.append('id_aluno', id);
             formData.append('titulo', titulo);
             formData.append('conteudo', conteudo);
+
+            const recebedorEl = document.getElementById('relatorio-recebedor');
+            if (recebedorEl && document.getElementById('container-recebedor').style.display !== 'none') {
+                if (!recebedorEl.value) {
+                    alert("Por favor, selecione um destinatário para o relatório.");
+                    return;
+                }
+                formData.append('id_recebedor', recebedorEl.value);
+            }
 
             try {
                 const response = await fetch('../src/controllers/relatorio/relatorio_novo.php', {
@@ -190,5 +303,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     await carregarAluno();
+    await carregarDestinatarios();
     await carregarRelatorios();
 });

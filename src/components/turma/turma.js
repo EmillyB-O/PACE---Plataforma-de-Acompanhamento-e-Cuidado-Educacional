@@ -77,16 +77,16 @@ function preencherTabela(tabela){
     for(var i=0;i<tabela.length;i++){ /*Nome da turma se torna um link para mostrar os alunos*/
         html += `
             <tr>
-                <td>
+                <td data-label="Nome">
                     <a href='aluno.html?id_turma=${tabela[i].id}'>
                         ${tabela[i].nome}
                     </a>
                 </td>
-                <td>${tabela[i].serie}</td>
-                <td>${tabela[i].ano}</td>
-                <td>${tabela[i].qntd_alunos || tabela[i].quantidade || ''}</td>
-                <td>${tabela[i].nome_instituicao || ''}</td>
-                <td>
+                <td data-label="Série">${tabela[i].serie}</td>
+                <td data-label="Ano">${tabela[i].ano}</td>
+                <td data-label="Quantidade">${tabela[i].qntd_alunos || tabela[i].quantidade || ''}</td>
+                <td data-label="Instituição">${tabela[i].nome_instituicao || ''}</td>
+                <td data-label="Ações">
                    ${isAdmin ?
                         "<a href='turma_alterar.html?id=" + tabela[i].id+ "' class='btn btn-sm btn-primary'>Alterar</a>" +
                         "<a href='#' onclick='excluir(" + tabela[i].id + ")' class='btn btn-sm btn-danger'>Excluir</a>"

@@ -67,14 +67,14 @@ function preencherTabela(tabela){
     for(var i=0;i<tabela.length;i++){ /*Nome da instituição se torna um link para mostrar as turmas*/
         html += `
             <tr>
-                <td>
+                <td data-label="Nome">
                     <a href='turma.html?id_instituicao=${tabela[i].id}'>
                         ${tabela[i].nome}
                     </a>
                 </td>
-                <td>${tabela[i].endereco}</td>
-                <td>${tabela[i].codigo}</td>
-                <td>
+                <td data-label="Endereço">${tabela[i].endereco}</td>
+                <td data-label="Código">${tabela[i].codigo}</td>
+                <td data-label="Ações">
                    ${isAdmin ?
                         "<a href='instituicao_alterar.html?id=" + tabela[i].id+ "' class='btn btn-sm btn-primary'>Alterar</a>" +
                         "<a href='#' onclick='excluir(" + tabela[i].id + ")' class='btn btn-sm btn-danger'>Excluir</a>"

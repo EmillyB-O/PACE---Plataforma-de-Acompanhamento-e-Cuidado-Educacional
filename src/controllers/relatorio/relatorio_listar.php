@@ -39,14 +39,14 @@ try {
     if ($cargo == '2') {
         // Pedagogo vê todos os relatórios do aluno
     } else if ($cargo == '3') {
-        // Profissional de Saúde vê relatórios de pedagogos (cargo = 2) ou de profissionais de saúde (cargo = 3)
-        $query .= " AND (u_rem.cargo = '2' OR u_rem.cargo = '3')";
+        // Profissional de Saúde vê relatórios de pedagogos (cargo = 2), ou relatórios criados por ele ou enviados para ele
+        $query .= " AND (u_rem.cargo = '2' OR r.id_remetente = " . intval($id_usuario_logado) . " OR r.id_recebedor = " . intval($id_usuario_logado) . ")";
     } else if ($cargo == '4') {
-        // Professor vê somente os seus próprios relatórios
-        $query .= " AND r.id_remetente = " . intval($id_usuario_logado);
+        // Professor vê relatórios enviados por ele mesmo ou que tenham sido enviados para ele
+        $query .= " AND (r.id_remetente = " . intval($id_usuario_logado) . " OR r.id_recebedor = " . intval($id_usuario_logado) . ")";
     } else if ($cargo == '5') {
-        // Responsável Legal vê somente os relatórios feitos por pedagogos (cargo = 2)
-        $query .= " AND u_rem.cargo = '2'";
+        // Responsável Legal vê relatórios feitos por pedagogos (cargo = 2) ou enviados diretamente para ele
+        $query .= " AND (u_rem.cargo = '2' OR r.id_recebedor = " . intval($id_usuario_logado) . ")";
     } else if ($cargo == '1') {
         // Administrador vê todos
     } else {

@@ -30,15 +30,15 @@ $resAlunos = $stmt->get_result();
 
 $alunos = [];
 while ($aluno = $resAlunos->fetch_assoc()) {
-    // Get reports for this student
+    // Get reports for this student, filtering by pedagogue sender (cargo = 2) or matching id_recebedor
     $stmtRel = $conexao->prepare('
         SELECT r.id, r.titulo, r.data_emissao, r.conteudo, u.nome as remetente_nome
         FROM Relatorio r
         JOIN Usuario u ON r.id_remetente = u.id
-        WHERE r.id_aluno = ?
+        WHERE r.id_aluno = ? AND (u.cargo = \'2\' OR r.id_recebedor = ?)
         ORDER BY r.data_emissao DESC
     ');
-    $stmtRel->bind_param('i', $aluno['id']);
+    $stmtRel->bind_param('ii', $aluno['id'], $id_responsavel);
     $stmtRel->execute();
     $resRel = $stmtRel->get_result();
     

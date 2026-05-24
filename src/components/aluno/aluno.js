@@ -83,16 +83,16 @@ function preencherTabela(tabela){
     for(var i=0;i<tabela.length;i++){
         html += `
             <tr>
-                <td>
+                <td data-label="Nome">
                     <a href='aluno_detalhes.html?id=${tabela[i].id}'>
                         ${tabela[i].nome}
                     </a>
                 </td>
-                <td>${tabela[i].matricula}</td>
-                <td>${tabela[i].serie}</td>
-                <td>${tabela[i].nome_turma || 'N/A'}</td>
-                <td>${tabela[i].nome_instituicao || 'N/A'}</td>
-                <td>
+                <td data-label="Matrícula">${tabela[i].matricula}</td>
+                <td data-label="Série">${tabela[i].serie}</td>
+                <td data-label="Turma">${tabela[i].nome_turma || 'N/A'}</td>
+                <td data-label="Instituição">${tabela[i].nome_instituicao || 'N/A'}</td>
+                <td data-label="Ações">
                    ${isAdmin ?
                         "<a href='aluno_alterar.html?id=" + tabela[i].id+ "' class='btn btn-sm btn-primary me-1'>Alterar</a>" +
                         "<button onclick='abrirVinculos(" + tabela[i].id + ", \"" + tabela[i].nome + "\")' class='btn btn-sm btn-info me-1 text-white'>Vincular</button>" +

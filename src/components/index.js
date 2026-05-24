@@ -96,12 +96,12 @@ function preencherTabela(tabela){
 
         html += `
             <tr>
-                <td>${tabela[i].nome}</td>
-                <td>${tabela[i].email}</td>
-                <td>${tabela[i].cpf}</td>
-                <td>${descCargo}</td>
-                <td>${descStatus}</td>
-                <td>${btns}</td>
+                <td data-label="Nome">${tabela[i].nome}</td>
+                <td data-label="Email">${tabela[i].email}</td>
+                <td data-label="CPF">${tabela[i].cpf}</td>
+                <td data-label="Cargo">${descCargo}</td>
+                <td data-label="Status">${descStatus}</td>
+                <td data-label="Ações">${btns}</td>
             </tr>
         `;
     }

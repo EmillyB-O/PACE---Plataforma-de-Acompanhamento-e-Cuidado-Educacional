@@ -50,18 +50,22 @@ if (empty($conteudo)) {
 try {
     $conexao->begin_transaction();
 
-    // id_recebedor é obrigatório no banco, vamos definir como o próprio remetente por padrão
-    $id_recebedor = $id_usuario_logado;
+    // Recebe o id_recebedor se for enviado pelo front-end
+    $id_recebedor = isset($_POST['id_recebedor']) ? intval($_POST['id_recebedor']) : 0;
 
-    // Buscar se o aluno possui algum responsável legal para atuar como recebedor secundário se aplicável
-    $stmt_resp = $conexao->prepare("SELECT id_responsavel FROM Responsavel_Aluno WHERE id_aluno = ? LIMIT 1");
-    $stmt_resp->bind_param("i", $id_aluno);
-    $stmt_resp->execute();
-    $res_resp = $stmt_resp->get_result();
-    if ($row_resp = $res_resp->fetch_assoc()) {
-        $id_recebedor = $row_resp['id_responsavel'];
+    if ($id_recebedor <= 0) {
+        // Buscar se o aluno possui algum responsável legal para atuar como recebedor secundário se aplicável
+        $stmt_resp = $conexao->prepare("SELECT id_responsavel FROM Responsavel_Aluno WHERE id_aluno = ? LIMIT 1");
+        $stmt_resp->bind_param("i", $id_aluno);
+        $stmt_resp->execute();
+        $res_resp = $stmt_resp->get_result();
+        if ($row_resp = $res_resp->fetch_assoc()) {
+            $id_recebedor = $row_resp['id_responsavel'];
+        } else {
+            $id_recebedor = $id_usuario_logado;
+        }
+        $stmt_resp->close();
     }
-    $stmt_resp->close();
 
     $query = "INSERT INTO Relatorio (titulo, data_emissao, id_aluno, id_remetente, id_recebedor, conteudo) 
               VALUES (?, NOW(), ?, ?, ?, ?)";
