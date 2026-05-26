@@ -12,6 +12,7 @@
         }
     </style>
     <title>Alunos - PACE</title>
+    <script src="../src/components/valida_sessao.js"></script>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg" style="background-color: #004e7a;" data-bs-theme="dark">
@@ -51,10 +52,8 @@
         </nav>
 
         <h2 class="text-dark mb-4">Meus Alunos</h2> 
-        <div class="row" id="lista-alunos"> //Div para exibição dos alunos vinculados ao profissional
-            <div class="col-12">
-                <p class="text-dark">Carregando alunos...</p>
-            </div>
+        <div id="lista-alunos" class="table-responsive">
+            <p class="text-dark">Carregando alunos...</p>
         </div>
     </div>
 

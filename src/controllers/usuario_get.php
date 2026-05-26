@@ -98,6 +98,28 @@
         $linha['id_instituicao'] = count($insts) > 0 ? $insts[0]['id'] : null;
         $linha['nome_instituicao'] = count($insts) > 0 ? $insts[0]['nome'] : 'Sem vínculo';
 
+        // Se o usuário for Professor (cargo 4), busca as turmas associadas a ele
+        if ($linha['cargo'] == '4') {
+            $stmtTurmas = $conexao->prepare("
+                SELECT t.id, t.nome, t.serie, t.ano 
+                FROM Turma t 
+                JOIN Professor_Turma pt ON t.id = pt.id_turma 
+                WHERE pt.id_professor = ?
+            ");
+            $stmtTurmas->bind_param("i", $idUser);
+            $stmtTurmas->execute();
+            $resTurmas = $stmtTurmas->get_result();
+            
+            $turmas = [];
+            while($turma = $resTurmas->fetch_assoc()){
+                $turmas[] = $turma;
+            }
+            $linha['turmas'] = $turmas;
+            $stmtTurmas->close();
+        } else {
+            $linha['turmas'] = [];
+        }
+
         $tabela[] = $linha;
         $stmtInst->close();
     }

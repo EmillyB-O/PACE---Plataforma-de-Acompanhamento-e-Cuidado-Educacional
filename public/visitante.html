@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../src/assets/css/style.css">
     <link href='https://fonts.googleapis.com/css?family=Indie Flower' rel='stylesheet'>
     <title>PACE</title>
+    <script src="../src/components/valida_sessao.js"></script>
 </head>
 <body style="background-color: #ffe7d6;">
     <nav class="navbar navbar-expand-lg" style="background-color: #004e7a;" data-bs-theme="dark">
@@ -81,6 +82,11 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            valida_sessao();
+        });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
 </body>
 </html>

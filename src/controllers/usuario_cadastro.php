@@ -21,6 +21,50 @@
         exit;
     }
 
+    // Função interna para validar matematicamente o CPF brasileiro
+    function validarCPF($cpf) {
+        $cpf = preg_replace('/[^0-9]/', '', $cpf);
+        if (strlen($cpf) != 11 || preg_match('/(\d)\1{10}/', $cpf)) return false;
+        for ($t = 9; $t < 11; $t++) {
+            for ($d = 0, $c = 0; $c < $t; $c++) {
+                $d += $cpf[$c] * (($t + 1) - $c);
+            }
+            $d = ((10 * $d) % 11) % 10;
+            if ($cpf[$c] != $d) return false;
+        }
+        return true;
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || !preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $email)) {
+        header('Content-type:application/json;charset:utf-8');
+        echo json_encode(['status' => 'nok', 'mensagem' => 'O e-mail fornecido é inválido. Por favor, verifique o endereço digitado.', 'data' => []]);
+        exit;
+    }
+
+    if (!validarCPF($cpf)) {
+        header('Content-type:application/json;charset:utf-8');
+        echo json_encode(['status' => 'nok', 'mensagem' => 'O CPF fornecido é inválido. Por favor, verifique o número digitado.', 'data' => []]);
+        exit;
+    }
+
+    $telefoneLimpo = preg_replace('/\D/', '', $telefone);
+    if (!preg_match('/^(?:[1-9]{2})(?:[2-8]|9[1-9])[0-9]{3}[0-9]{4}$/', $telefoneLimpo)) {
+        header('Content-type:application/json;charset:utf-8');
+        echo json_encode(['status' => 'nok', 'mensagem' => 'O telefone fornecido é inválido. Por favor, utilize o formato com DDD.', 'data' => []]);
+        exit;
+    }
+
+    // Validação de senha forte (mínimo de 8 caracteres, maiúsculas, minúsculas, números e caracteres especiais)
+    if (strlen($senhaInput) < 8 ||
+        !preg_match('/[A-Z]/', $senhaInput) ||
+        !preg_match('/[a-z]/', $senhaInput) ||
+        !preg_match('/[0-9]/', $senhaInput) ||
+        !preg_match('/[^A-Za-z0-9]/', $senhaInput)) {
+        header('Content-type:application/json;charset:utf-8');
+        echo json_encode(['status' => 'nok', 'mensagem' => 'A senha fornecida não atende aos requisitos de segurança (mínimo de 8 caracteres, contendo letras maiúsculas, minúsculas, números e caracteres especiais).', 'data' => []]);
+        exit;
+    }
+
     $senha = password_hash($senhaInput, PASSWORD_DEFAULT);
 
     // Validação de permissão do usuário logado
@@ -82,6 +126,18 @@
         if (empty($crm) && empty($crp)) {
             header('Content-type:application/json;charset:utf-8');
             echo json_encode(['status' => 'nok', 'mensagem' => 'Pelo menos um dos campos (CRM ou CRP) deve ser preenchido para Profissional da Saúde.', 'data' => []]);
+            exit;
+        }
+
+        if (!empty($crm) && !preg_match('/^\d{4,6}\/[A-Z]{2}$/i', $crm)) {
+            header('Content-type:application/json;charset:utf-8');
+            echo json_encode(['status' => 'nok', 'mensagem' => 'O formato do CRM é inválido. Utilize o formato: 123456/SP', 'data' => []]);
+            exit;
+        }
+
+        if (!empty($crp) && !preg_match('/^\d{2}\/\d{4,6}$/', $crp)) {
+            header('Content-type:application/json;charset:utf-8');
+            echo json_encode(['status' => 'nok', 'mensagem' => 'O formato do CRP é inválido. Utilize o formato: 06/123456', 'data' => []]);
             exit;
         }
 

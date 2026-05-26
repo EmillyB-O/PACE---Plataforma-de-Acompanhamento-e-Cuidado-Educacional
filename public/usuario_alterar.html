@@ -75,11 +75,18 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="cpf" class="form-label">CPF</label>
-                        <input type="text" class="form-control" id="cpf" maxlength="11" placeholder="Apenas números" inputmode="numeric">
+                        <input type="text" class="form-control" id="cpf" maxlength="11" placeholder="Apenas números" inputmode="numeric" readonly>
                     </div>
                     <div class="col-md-6">
                         <label for="senha" class="form-label">Nova Senha (deixar em branco p/ manter)</label>
                         <input type="password" class="form-control" id="senha">
+                        <div class="password-requirements" id="password-requirements">
+                            <div class="requirement-item" id="req-length">Mínimo de 8 caracteres</div>
+                            <div class="requirement-item" id="req-upper">Pelo menos uma letra maiúscula</div>
+                            <div class="requirement-item" id="req-lower">Pelo menos uma letra minúscula</div>
+                            <div class="requirement-item" id="req-number">Pelo menos um número</div>
+                            <div class="requirement-item" id="req-special">Pelo menos um caractere especial</div>
+                        </div>
                     </div>
                 </div>
 
@@ -137,9 +144,16 @@
 
                 <div id="div_prof" style="display: none;" class="mt-3 bg-light p-3 border rounded">
                     <h5>Dados do Professor</h5>
-                    <label for="materia" class="form-label">Matéria</label>
-                    <input type="text" class="form-control" id="materia">
-                    <!-- Professor usa ID e CNDB que compartilham os mesmos inputs criados acima no form HTML -->
+                    <div class="mb-3">
+                        <label for="materia" class="form-label">Matéria</label>
+                        <input type="text" class="form-control" id="materia">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label d-block">Turmas Vinculadas</label>
+                        <div id="container_turmas" class="border rounded p-3 bg-white" style="max-height: 200px; overflow-y: auto;">
+                            <span class="text-muted">Selecione uma instituição para carregar as turmas...</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="div_responsavel" style="display: none;" class="mt-3 bg-light p-3 border rounded">

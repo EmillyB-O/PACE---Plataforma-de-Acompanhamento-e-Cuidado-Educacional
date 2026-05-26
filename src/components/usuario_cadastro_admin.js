@@ -141,6 +141,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
     }
+    setupPasswordStrengthValidation();
 });
 
 async function carregarInstituicoes() {
@@ -185,6 +186,26 @@ async function novo() {
         return;
     }
 
+    if (!validarEmail(email)) {
+        alert("O e-mail fornecido é inválido. Por favor, verifique o endereço digitado.");
+        return;
+    }
+
+    if (!validarCPF(cpf)) {
+        alert("O CPF fornecido é inválido. Por favor, verifique o número digitado.");
+        return;
+    }
+
+    if (!validarTelefone(telefone)) {
+        alert("O telefone fornecido é inválido. Por favor, utilize o formato com DDD.");
+        return;
+    }
+
+    if (!isPasswordStrong(senha)) {
+        alert("A senha fornecida não atende aos requisitos de segurança (mínimo de 8 caracteres, contendo letras maiúsculas, minúsculas, números e caracteres especiais).");
+        return;
+    }
+
     const fd = new FormData();
     fd.append('nome', nome);
     fd.append('email', email);
@@ -214,13 +235,13 @@ async function novo() {
         }
         var crm = document.getElementById('crm').value.trim();
         var crp = document.getElementById('crp').value.trim();
-        if (conselho === 'seletor_crm' && !crm) {
-            alert("O preenchimento do campo CRM é obrigatório.");
-            return;
+        if (conselho === 'seletor_crm') {
+            if (!crm) { alert("O preenchimento do campo CRM é obrigatório."); return; }
+            if (!validarCRM(crm)) { alert("O formato do CRM é inválido. Utilize o formato: 123456/SP"); return; }
         }
-        if (conselho === 'seletor_crp' && !crp) {
-            alert("O preenchimento do campo CRP é obrigatório.");
-            return;
+        if (conselho === 'seletor_crp') {
+            if (!crp) { alert("O preenchimento do campo CRP é obrigatório."); return; }
+            if (!validarCRP(crp)) { alert("O formato do CRP é inválido. Utilize o formato: 06/123456"); return; }
         }
         fd.append('crm', crm);
         fd.append('crp', crp);
@@ -248,4 +269,52 @@ async function novo() {
         console.error("Erro na requisição: ", erro);
         alert("Ocorreu um erro ao comunicar com o servidor.")
     }
+}
+
+// Inicializar validação em tempo real da força da senha
+function isPasswordStrong(senha) {
+    return senha.length >= 8 &&
+           /[A-Z]/.test(senha) &&
+           /[a-z]/.test(senha) &&
+           /[0-9]/.test(senha) &&
+           /[^A-Za-z0-9]/.test(senha);
+}
+
+function setupPasswordStrengthValidation() {
+    const senhaInput = document.getElementById('senha');
+    if (!senhaInput) return;
+
+    const reqs = {
+        length: { el: document.getElementById('req-length'), test: (val) => val.length >= 8 },
+        upper: { el: document.getElementById('req-upper'), test: (val) => /[A-Z]/.test(val) },
+        lower: { el: document.getElementById('req-lower'), test: (val) => /[a-z]/.test(val) },
+        number: { el: document.getElementById('req-number'), test: (val) => /[0-9]/.test(val) },
+        special: { el: document.getElementById('req-special'), test: (val) => /[^A-Za-z0-9]/.test(val) }
+    };
+
+    const validate = () => {
+        const val = senhaInput.value;
+        const isEmpty = val.length === 0;
+
+        for (const key in reqs) {
+            const req = reqs[key];
+            if (req.el) {
+                if (isEmpty) {
+                    req.el.classList.remove('valid', 'invalid');
+                } else {
+                    const isValid = req.test(val);
+                    if (isValid) {
+                        req.el.classList.remove('invalid');
+                        req.el.classList.add('valid');
+                    } else {
+                        req.el.classList.remove('valid');
+                        req.el.classList.add('invalid');
+                    }
+                }
+            }
+        }
+    };
+
+    senhaInput.addEventListener('input', validate);
+    validate();
 }

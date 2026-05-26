@@ -70,7 +70,7 @@ function preencherTabela(tabela){
                     <th> Ano </th>
                     <th> Quantidade </th>
                     <th> Instituição </th>
-                    <th> Ações </th>
+                    ${isAdmin ? '<th> Ações </th>' : ''}
                 </tr>
             </thead>
             <tbody>`;
@@ -86,12 +86,12 @@ function preencherTabela(tabela){
                 <td data-label="Ano">${tabela[i].ano}</td>
                 <td data-label="Quantidade">${tabela[i].qntd_alunos || tabela[i].quantidade || ''}</td>
                 <td data-label="Instituição">${tabela[i].nome_instituicao || ''}</td>
+                ${isAdmin ? `
                 <td data-label="Ações">
-                   ${isAdmin ?
-                        "<a href='turma_alterar.html?id=" + tabela[i].id+ "' class='btn btn-sm btn-primary'>Alterar</a>" +
-                        "<a href='#' onclick='excluir(" + tabela[i].id + ")' class='btn btn-sm btn-danger'>Excluir</a>"
-                   : ""}
+                    <a href='turma_alterar.html?id=${tabela[i].id}' class='btn btn-sm btn-primary me-1'>Alterar</a>
+                    <a href='#' onclick='excluir(${tabela[i].id})' class='btn btn-sm btn-danger'>Excluir</a>
                 </td>
+                ` : ''}
             </tr>
         `;
     }

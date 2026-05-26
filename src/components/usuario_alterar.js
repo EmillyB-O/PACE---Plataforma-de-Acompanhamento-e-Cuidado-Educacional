@@ -1,6 +1,57 @@
+let turmasSelecionadasPrevia = [];
+
+async function carregarTurmas(idInst, selecionadasIds = []) {
+    const container = document.getElementById('container_turmas');
+    if (!container) return;
+
+    if (!idInst) {
+        container.innerHTML = '<span class="text-muted">Selecione uma instituição para carregar as turmas...</span>';
+        return;
+    }
+
+    try {
+        container.innerHTML = '<span class="text-muted">Carregando turmas...</span>';
+        const retorno = await fetch('../src/controllers/turma/turma_get.php?id_instituicao=' + idInst);
+        const resposta = await retorno.json();
+
+        if (resposta.status === 'ok') {
+            const turmas = resposta.data;
+            let html = '';
+            turmas.forEach(t => {
+                const checked = selecionadasIds.includes(Number(t.id)) || selecionadasIds.includes(String(t.id)) ? 'checked' : '';
+                html += `
+                    <div class="form-check my-2">
+                        <input class="form-check-input" type="checkbox" name="turma_opcao" value="${t.id}" id="chk_turma_${t.id}" ${checked}>
+                        <label class="form-check-label" for="chk_turma_${t.id}">
+                            ${t.nome} (${t.serie}º ano - ${t.ano})
+                        </label>
+                    </div>
+                `;
+            });
+            container.innerHTML = html || '<span class="text-muted">Nenhuma turma cadastrada nesta instituição.</span>';
+        } else {
+            container.innerHTML = '<span class="text-muted">Nenhuma turma cadastrada nesta instituição.</span>';
+        }
+    } catch (e) {
+        console.error("Erro ao carregar turmas:", e);
+        container.innerHTML = '<span class="text-danger">Erro ao carregar turmas.</span>';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     await valida_sessao();
     await carregarInstituicoes();
+    
+    // Escuta mudança de instituição para atualizar turmas dinamicamente se o cargo for Professor (4)
+    const selectInst = document.getElementById('id_instituicao');
+    if (selectInst) {
+        selectInst.addEventListener('change', function() {
+            const cargo = document.getElementById('cargo').value;
+            if (cargo === '4') {
+                carregarTurmas(this.value, turmasSelecionadasPrevia);
+            }
+        });
+    }
     
     const url = new URLSearchParams(window.location.search);
     const id = url.get('id');
@@ -27,6 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
     }
+    setupPasswordStrengthValidation();
 });
 
 async function carregarInstituicoes() {
@@ -82,6 +134,10 @@ async function buscar(id) {
             if (wCrp) wCrp.style.display = (registro.crp && registro.crp.trim() !== '') ? 'block' : 'none';
         } else if (registro.cargo === '4') {
             document.getElementById('materia').value = registro.materia;
+            turmasSelecionadasPrevia = registro.turmas ? registro.turmas.map(t => Number(t.id)) : [];
+            if (registro.id_instituicao) {
+                await carregarTurmas(registro.id_instituicao, turmasSelecionadasPrevia);
+            }
         } else if (registro.cargo === '5') {
             document.getElementById('data_nasc').value = registro.data_nasc;
         }
@@ -135,13 +191,32 @@ if (nivelInput) {
 
 async function alterar() {
     const id = document.getElementById('id').value;
+    const email = document.getElementById('email').value.trim();
+    const telefone = document.getElementById('telefone').value.trim();
+    const senha = document.getElementById('senha').value.trim();
+
+    if (!validarEmail(email)) {
+        alert("O e-mail fornecido é inválido. Por favor, verifique o endereço digitado.");
+        return;
+    }
+
+    if (!validarTelefone(telefone)) {
+        alert("O telefone fornecido é inválido. Por favor, utilize o formato com DDD.");
+        return;
+    }
+
+    if (senha.length > 0 && !isPasswordStrong(senha)) {
+        alert("A nova senha fornecida não atende aos requisitos de segurança (mínimo de 8 caracteres, contendo letras maiúsculas, minúsculas, números e caracteres especiais).");
+        return;
+    }
+
     const fd = new FormData();
     fd.append('nome', document.getElementById('nome').value.trim());
-    fd.append('email', document.getElementById('email').value.trim());
+    fd.append('email', email);
     fd.append('cpf', document.getElementById('cpf').value.replace(/\D/g, ''));
-    fd.append('senha', document.getElementById('senha').value.trim());
+    fd.append('senha', senha);
     fd.append('cargo', document.getElementById('cargo').value);
-    fd.append('telefone', document.getElementById('telefone').value.replace(/\D/g, ''));
+    fd.append('telefone', telefone.replace(/\D/g, ''));
 
     const cargo = document.getElementById('cargo').value;
     const id_inst = document.getElementById('id_instituicao').value;
@@ -167,6 +242,11 @@ async function alterar() {
     } else if (cargo === '4') {//professor
         fd.append('materia', document.getElementById('materia').value);
         fd.append('id_instituicao', id_inst);
+        
+        const checkboxes = document.querySelectorAll('input[name="turma_opcao"]:checked');
+        checkboxes.forEach(cb => {
+            fd.append('turmas[]', cb.value);
+        });
     } else if (cargo === '5') {
         fd.append('data_nasc', document.getElementById('data_nasc').value);
     }
@@ -178,4 +258,53 @@ async function alterar() {
             showAlertAndRedirect('Sucesso: ' + resposta.mensagem, 'painel_admin.html');
         } else { alert('Erro: ' + resposta.mensagem); }
     } catch (e) { alert("Erro de comunicação."); }
+}
+
+// Inicializar validação em tempo real da força da senha
+function isPasswordStrong(senha) {
+    return senha.length >= 8 &&
+           /[A-Z]/.test(senha) &&
+           /[a-z]/.test(senha) &&
+           /[0-9]/.test(senha) &&
+           /[^A-Za-z0-9]/.test(senha);
+}
+
+function setupPasswordStrengthValidation() {
+    const senhaInput = document.getElementById('senha');
+    const requirementsContainer = document.getElementById('password-requirements');
+    if (!senhaInput) return;
+
+    const reqs = {
+        length: { el: document.getElementById('req-length'), test: (val) => val.length >= 8 },
+        upper: { el: document.getElementById('req-upper'), test: (val) => /[A-Z]/.test(val) },
+        lower: { el: document.getElementById('req-lower'), test: (val) => /[a-z]/.test(val) },
+        number: { el: document.getElementById('req-number'), test: (val) => /[0-9]/.test(val) },
+        special: { el: document.getElementById('req-special'), test: (val) => /[^A-Za-z0-9]/.test(val) }
+    };
+
+    const validate = () => {
+        const val = senhaInput.value;
+        const isEmpty = val.length === 0;
+
+        for (const key in reqs) {
+            const req = reqs[key];
+            if (req.el) {
+                if (isEmpty) {
+                    req.el.classList.remove('valid', 'invalid');
+                } else {
+                    const isValid = req.test(val);
+                    if (isValid) {
+                        req.el.classList.remove('invalid');
+                        req.el.classList.add('valid');
+                    } else {
+                        req.el.classList.remove('valid');
+                        req.el.classList.add('invalid');
+                    }
+                }
+            }
+        }
+    };
+
+    senhaInput.addEventListener('input', validate);
+    validate();
 }

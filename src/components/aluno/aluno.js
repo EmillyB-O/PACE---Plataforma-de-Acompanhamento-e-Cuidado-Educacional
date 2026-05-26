@@ -76,7 +76,7 @@ function preencherTabela(tabela){
                     <th> Série </th>
                     <th> Turma </th>
                     <th> Instituição </th>
-                    <th> Ações </th>
+                    ${isAdmin ? '<th> Ações </th>' : ''}
                 </tr>
             </thead>
             <tbody>`;
@@ -92,13 +92,13 @@ function preencherTabela(tabela){
                 <td data-label="Série">${tabela[i].serie}</td>
                 <td data-label="Turma">${tabela[i].nome_turma || 'N/A'}</td>
                 <td data-label="Instituição">${tabela[i].nome_instituicao || 'N/A'}</td>
+                ${isAdmin ? `
                 <td data-label="Ações">
-                   ${isAdmin ?
-                        "<a href='aluno_alterar.html?id=" + tabela[i].id+ "' class='btn btn-sm btn-primary me-1'>Alterar</a>" +
-                        "<button onclick='abrirVinculos(" + tabela[i].id + ", \"" + tabela[i].nome + "\")' class='btn btn-sm btn-info me-1 text-white'>Vincular</button>" +
-                        "<a href='#' onclick='excluir(" + tabela[i].id + ")' class='btn btn-sm btn-danger'>Excluir</a>"
-                   : ""}
+                    <a href='aluno_alterar.html?id=${tabela[i].id}' class='btn btn-sm btn-primary me-1'>Alterar</a>
+                    <button onclick='abrirVinculos(${tabela[i].id}, "${tabela[i].nome}")' class='btn btn-sm btn-info me-1 text-white'>Vincular</button>
+                    <a href='#' onclick='excluir(${tabela[i].id})' class='btn btn-sm btn-danger'>Excluir</a>
                 </td>
+                ` : ''}
             </tr>
         `;
     }
@@ -208,7 +208,12 @@ document.getElementById('vincular-cargo').addEventListener('change', async funct
         if (result.status === 'ok') {
             let html = '<option value="">Selecione um usuário...</option>';
             result.data.forEach(user => {
-                html += `<option value="${user.id}">${user.nome} (${user.cpf})</option>`;
+                let cpfFormatado = user.cpf || '';
+                let cleanCPF = String(cpfFormatado).replace(/\D/g, "");
+                if (cleanCPF.length === 11) {
+                    cpfFormatado = cleanCPF.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "$1.$2.$3-$4");
+                }
+                html += `<option value="${user.id}">${user.nome} (${cpfFormatado})</option>`;
             });
             selectUser.innerHTML = html;
             selectUser.disabled = false;

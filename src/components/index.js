@@ -82,8 +82,12 @@ function preencherTabela(tabela){
             default: descCargo = tabela[i].cargo;
         }
 
-        let btns = `<a href='usuario_alterar.html?id=${tabela[i].id}' class="btn btn-sm btn-primary">Alterar</a>
-                    <a href='#' onclick='excluir(${tabela[i].id})' class="btn btn-sm btn-danger">Excluir</a>`;
+        const isSelf = window.usuarioLogado && (parseInt(tabela[i].id) === parseInt(window.usuarioLogado.id));
+
+        let btns = `<a href='usuario_alterar.html?id=${tabela[i].id}' class="btn btn-sm btn-primary">Alterar</a>`;
+        if (!isSelf) {
+            btns += ` <a href='#' onclick='excluir(${tabela[i].id})' class="btn btn-sm btn-danger">Excluir</a>`;
+        }
         
         let descStatus = tabela[i].status == 1 ? 'Ativo' : 'Inativo';
         if (tabela[i].status == '2') {
@@ -94,11 +98,18 @@ function preencherTabela(tabela){
             descStatus = '<span class="text-danger fw-bold">Inválido / Recusado</span>';
         }
 
+        // Formatar CPF
+        let cpfFormatado = tabela[i].cpf || '';
+        let cleanCPF = String(cpfFormatado).replace(/\D/g, "");
+        if (cleanCPF.length === 11) {
+            cpfFormatado = cleanCPF.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "$1.$2.$3-$4");
+        }
+
         html += `
             <tr>
                 <td data-label="Nome">${tabela[i].nome}</td>
                 <td data-label="Email">${tabela[i].email}</td>
-                <td data-label="CPF">${tabela[i].cpf}</td>
+                <td data-label="CPF">${cpfFormatado}</td>
                 <td data-label="Cargo">${descCargo}</td>
                 <td data-label="Status">${descStatus}</td>
                 <td data-label="Ações">${btns}</td>

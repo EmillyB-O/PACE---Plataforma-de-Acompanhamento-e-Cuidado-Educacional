@@ -16,13 +16,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const response = await fetch(`../src/controllers/profissional_get_turmas.php?id_instituicao=${idInstituicao}`);
+            const response = await fetch(`../src/controllers/profissional/profissional_get_turmas.php?id_instituicao=${idInstituicao}`);
             const result = await response.json();
             const lista = document.getElementById('lista-turmas');
 
             if (result.status === 'ok') {
                 if (result.data.length === 0) {
-                    lista.innerHTML = '<div class="col-12"><p class="text-dark">Nenhuma turma encontrada nesta instituição com alunos sob sua responsabilidade.</p></div>';
+                    lista.innerHTML = '<div class="col-12"><p class="text-dark">Sem turmas cadastradas.</p></div>';
                     return;
                 }
 

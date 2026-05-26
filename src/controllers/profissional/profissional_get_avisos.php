@@ -29,7 +29,8 @@ $query = "SELECT r.*, a.nome as nome_aluno, u.nome as nome_remetente
 
 $stmt = $conexao->prepare($query);
 if (!$stmt) {
-    $retorno['mensagem'] = 'Erro no banco: ' . $conexao->error;
+    $retorno['mensagem'] = 'Erro interno ao consultar os avisos.';
+    $retorno['detalhes'] = 'Erro no banco: ' . $conexao->error;
     header('Content-type:application/json;charset:utf-8');
     echo json_encode($retorno);
     exit;

@@ -296,3 +296,56 @@ body[style*="background-image"]::before {
         margin-right: 15px;
     }
 }
+
+/* Password strength requirements indicators */
+.password-requirements {
+    font-size: 0.82rem;
+    margin-top: 0.5rem;
+    padding: 0.6rem 0.8rem;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 78, 122, 0.15);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s ease;
+}
+
+.requirement-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.3rem;
+    color: #64748b;
+    font-weight: 500;
+    transition: all 0.25s ease;
+}
+
+.requirement-item:last-child {
+    margin-bottom: 0;
+}
+
+.requirement-item.valid {
+    color: #10b981 !important;
+}
+
+.requirement-item.invalid {
+    color: #ef4444 !important;
+}
+
+.requirement-item::before {
+    content: "○";
+    font-weight: bold;
+    display: inline-block;
+    width: 14px;
+    text-align: center;
+}
+
+.requirement-item.valid::before {
+    content: "✓";
+    font-weight: 900;
+}
+
+.requirement-item.invalid::before {
+    content: "✗";
+    font-weight: 900;
+}
+

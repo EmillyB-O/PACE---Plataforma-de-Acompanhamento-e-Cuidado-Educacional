@@ -20,13 +20,26 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['cargo'] != '3') {
 
 $id_profissional = $_SESSION['usuario']['id'];
 
-$query = "SELECT i.* FROM Instituicao i 
-          JOIN Profissional_Instituicao pi ON i.id = pi.id_instituicao 
-          WHERE pi.id_profissional = ?";
+    // Garante a existência da tabela Profissional_Aluno
+    $conexao->query("
+        CREATE TABLE IF NOT EXISTS Profissional_Aluno (
+            id_profissional INT NOT NULL,
+            id_aluno INT NOT NULL,
+            PRIMARY KEY (id_profissional, id_aluno),
+            FOREIGN KEY (id_profissional) REFERENCES Usuario(id) ON DELETE CASCADE,
+            FOREIGN KEY (id_aluno) REFERENCES Aluno(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB;
+    ");
+
+    $query = "SELECT DISTINCT i.* FROM Instituicao i 
+              JOIN Aluno a ON i.id = a.id_instituicao 
+              JOIN Profissional_Aluno pa ON a.id = pa.id_aluno 
+              WHERE pa.id_profissional = ?";
 
 $stmt = $conexao->prepare($query);
 if (!$stmt) {
-    $retorno['mensagem'] = 'Erro no banco: ' . $conexao->error;
+    $retorno['mensagem'] = 'Erro interno ao consultar as instituições.';
+    $retorno['detalhes'] = 'Erro no banco: ' . $conexao->error;
     header('Content-type:application/json;charset:utf-8');
     echo json_encode($retorno);
     exit;

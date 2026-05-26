@@ -15,6 +15,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         const cargo = String(window.usuarioLogado.cargo);
         if (cargo === '2' || cargo === '3' || cargo === '4') {
             document.getElementById('btn-novo-relatorio').style.display = 'block';
+            
+            // Exibe seção de laudos
+            document.getElementById('secao-laudos').style.display = 'block';
+            
+            // Apenas profissional da saúde (cargo 3) pode anexar laudo
+            if (cargo === '3') {
+                document.getElementById('btn-novo-laudo').style.display = 'block';
+            }
         }
     }
 
@@ -302,7 +310,120 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
+    async function carregarLaudos() {
+        const listaEl = document.getElementById('lista-laudos');
+        if (!listaEl) return;
+
+        try {
+            const response = await fetch(`../src/controllers/laudo/laudo_listar.php?id_aluno=${id}`);
+            const result = await response.json();
+            
+            if (result.status === 'ok') {
+                listaEl.innerHTML = '';
+                if (result.data.length === 0) {
+                    listaEl.innerHTML = '<p class="text-muted small">Nenhum laudo ou diagnóstico registrado para este aluno.</p>';
+                    return;
+                }
+                
+                result.data.forEach(laudo => {
+                    const item = document.createElement('div');
+                    item.className = 'list-group-item list-group-item-action flex-column align-items-start border rounded mb-3 p-3 shadow-sm';
+                    item.style.borderColor = '#004e7a22';
+
+                    item.innerHTML = `
+                        <div class="d-flex w-100 justify-content-between align-items-center mb-2">
+                            <h5 class="mb-1 fw-bold" style="color: #004e7a !important;"><i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i>${laudo.titulo}</h5>
+                            <small class="text-muted"><i class="bi bi-clock"></i> ${formatarDataHora(laudo.data_emissao)}</small>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                <small class="text-muted d-block">Profissional emissor: <b class="text-dark">${laudo.nome_profissional}</b></small>
+                                <small class="text-muted">Arquivo: <b class="text-secondary">${laudo.anexo_nome || 'laudo.pdf'}</b></small>
+                            </div>
+                            <a href="../src/controllers/laudo/laudo_download.php?id=${laudo.id}" target="_blank" class="btn btn-sm btn-outline-danger">
+                                <b>Visualizar PDF</b>
+                            </a>
+                        </div>
+                    `;
+                    listaEl.appendChild(item);
+                });
+            } else {
+                listaEl.innerHTML = `<p class="text-danger small">Erro ao carregar laudos: ${result.mensagem}</p>`;
+            }
+        } catch (e) {
+            console.error("Erro ao carregar laudos:", e);
+            listaEl.innerHTML = '<p class="text-danger small">Erro de conexão ao carregar laudos.</p>';
+        }
+    }
+
+    // Ação de Salvar Laudo
+    const btnSalvarLaudo = document.getElementById('btn-salvar-laudo');
+    if (btnSalvarLaudo) {
+        btnSalvarLaudo.addEventListener('click', async () => {
+            const titulo = document.getElementById('laudo-titulo').value.trim();
+            const pdfInput = document.getElementById('laudo-pdf');
+
+            if (!titulo) {
+                alert("O título do laudo é obrigatório.");
+                return;
+            }
+            if (!pdfInput.files || pdfInput.files.length === 0) {
+                alert("Por favor, selecione um arquivo PDF.");
+                return;
+            }
+
+            const pdfFile = pdfInput.files[0];
+            if (pdfFile.type !== 'application/pdf') {
+                const ext = pdfFile.name.split('.').pop().toLowerCase();
+                if (ext !== 'pdf') {
+                    alert("Apenas arquivos no formato PDF são permitidos.");
+                    return;
+                }
+            }
+
+            const formData = new FormData();
+            formData.append('id_aluno', id);
+            formData.append('titulo', titulo);
+            formData.append('pdf', pdfFile);
+
+            try {
+                const response = await fetch('../src/controllers/laudo/laudo_novo.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (result.status === 'ok') {
+                    alert("Laudo anexado com sucesso!");
+                    
+                    // Fechar modal
+                    const modalEl = document.getElementById('modalNovoLaudo');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                    
+                    // Limpar formulário
+                    document.getElementById('form-novo-laudo').reset();
+                    
+                    // Recarregar lista
+                    await carregarLaudos();
+                } else {
+                    alert("Erro ao salvar laudo: " + result.mensagem);
+                }
+            } catch (e) {
+                console.error("Erro ao salvar laudo:", e);
+                alert("Erro de conexão ao salvar laudo.");
+            }
+        });
+    }
+
     await carregarAluno();
     await carregarDestinatarios();
     await carregarRelatorios();
+    
+    if (window.usuarioLogado) {
+        const cargo = String(window.usuarioLogado.cargo);
+        if (cargo === '2' || cargo === '3' || cargo === '4') {
+            await carregarLaudos();
+        }
+    }
 });

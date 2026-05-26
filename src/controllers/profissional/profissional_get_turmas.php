@@ -3,7 +3,7 @@ session_start();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-include_once('../config/conexao.php');
+include_once('../../config/conexao.php');
 
 $retorno = [
     'status' => 'nok',
@@ -35,7 +35,8 @@ $query = "SELECT DISTINCT t.* FROM Turma t
 
 $stmt = $conexao->prepare($query);
 if (!$stmt) {
-    $retorno['mensagem'] = 'Erro no banco: ' . $conexao->error;
+    $retorno['mensagem'] = 'Erro interno ao consultar as turmas.';
+    $retorno['detalhes'] = 'Erro no banco: ' . $conexao->error;
     header('Content-type:application/json;charset:utf-8');
     echo json_encode($retorno);
     exit;

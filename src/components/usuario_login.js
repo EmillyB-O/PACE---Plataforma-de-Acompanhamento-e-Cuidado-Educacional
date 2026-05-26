@@ -132,5 +132,7 @@ async function login(){
         } else {
             window.location.href = 'index.html'; 
         }
-    };
+    } else {
+        alert(resposta.mensagem || 'Erro ao realizar login.');
+    }
 };

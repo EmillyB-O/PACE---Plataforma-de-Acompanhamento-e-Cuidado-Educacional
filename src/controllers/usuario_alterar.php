@@ -22,6 +22,19 @@ if (isset($_GET['id'])) {
         exit;
     }
 
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || !preg_match('/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', $email)) {
+        header('Content-type:application/json;charset:utf-8');
+        echo json_encode(['status' => 'nok', 'mensagem' => 'O e-mail fornecido é inválido. Por favor, verifique o endereço digitado.', 'data' => []]);
+        exit;
+    }
+
+    $telefoneLimpo = preg_replace('/\D/', '', $telefone);
+    if (!preg_match('/^(?:[1-9]{2})(?:[2-8]|9[1-9])[0-9]{3}[0-9]{4}$/', $telefoneLimpo)) {
+        header('Content-type:application/json;charset:utf-8');
+        echo json_encode(['status' => 'nok', 'mensagem' => 'O telefone fornecido é inválido. Por favor, utilize o formato com DDD.', 'data' => []]);
+        exit;
+    }
+
     if (isset($_SESSION['usuario'])) {
         $userLogado = $_SESSION['usuario'];
         $cargoLogado = $userLogado['cargo'];
@@ -53,12 +66,22 @@ if (isset($_GET['id'])) {
 
         // Atualiza dados básicos
         if (!empty($senhaInput)) {
+            // Validação de senha forte (mínimo de 8 caracteres, maiúsculas, minúsculas, números e caracteres especiais)
+            if (strlen($senhaInput) < 8 ||
+                !preg_match('/[A-Z]/', $senhaInput) ||
+                !preg_match('/[a-z]/', $senhaInput) ||
+                !preg_match('/[0-9]/', $senhaInput) ||
+                !preg_match('/[^A-Za-z0-9]/', $senhaInput)) {
+                header('Content-type:application/json;charset:utf-8');
+                echo json_encode(['status' => 'nok', 'mensagem' => 'A nova senha não atende aos requisitos de segurança (mínimo de 8 caracteres, contendo letras maiúsculas, minúsculas, números e caracteres especiais).', 'data' => []]);
+                exit;
+            }
             $senha = password_hash($senhaInput, PASSWORD_DEFAULT);
-            $stmt = $conexao->prepare('UPDATE Usuario SET nome = ?, email = ?, cpf = ?, senha = ?, cargo = ?, telefone = ? WHERE id = ?');
-            $stmt->bind_param('ssssssi', $nome, $email, $cpf, $senha, $cargo, $telefone, $idEdit);
+            $stmt = $conexao->prepare('UPDATE Usuario SET nome = ?, email = ?, senha = ?, cargo = ?, telefone = ? WHERE id = ?');
+            $stmt->bind_param('sssssi', $nome, $email, $senha, $cargo, $telefone, $idEdit);
         } else {
-            $stmt = $conexao->prepare('UPDATE Usuario SET nome = ?, email = ?, cpf = ?, cargo = ?, telefone = ? WHERE id = ?');
-            $stmt->bind_param('sssssi', $nome, $email, $cpf, $cargo, $telefone, $idEdit);
+            $stmt = $conexao->prepare('UPDATE Usuario SET nome = ?, email = ?, cargo = ?, telefone = ? WHERE id = ?');
+            $stmt->bind_param('ssssi', $nome, $email, $cargo, $telefone, $idEdit);
         }
         $stmt->execute();
 
@@ -84,6 +107,24 @@ if (isset($_GET['id'])) {
             $stmt = $conexao->prepare('UPDATE Professor SET materia = ? WHERE id_usuario = ?');
             $stmt->bind_param('si', $materia, $idEdit);
             $stmt->execute();
+
+            // Sincroniza Turmas (M:N)
+            // Primeiro remove vínculos antigos
+            $stmtDelTurmas = $conexao->prepare("DELETE FROM Professor_Turma WHERE id_professor = ?");
+            $stmtDelTurmas->bind_param("i", $idEdit);
+            $stmtDelTurmas->execute();
+            $stmtDelTurmas->close();
+
+            // Insere os novos vínculos se houver
+            if (isset($_POST['turmas']) && is_array($_POST['turmas'])) {
+                $stmtInsTurma = $conexao->prepare("INSERT INTO Professor_Turma (id_professor, id_turma) VALUES (?, ?)");
+                foreach ($_POST['turmas'] as $id_turma) {
+                    $id_turma_int = intval($id_turma);
+                    $stmtInsTurma->bind_param("ii", $idEdit, $id_turma_int);
+                    $stmtInsTurma->execute();
+                }
+                $stmtInsTurma->close();
+            }
         } elseif ($cargo === '5') {
             $data_nasc = $_POST['data_nasc'];
             $stmt = $conexao->prepare('UPDATE Responsavel_Legal SET data_nasc = ? WHERE id_usuario = ?');

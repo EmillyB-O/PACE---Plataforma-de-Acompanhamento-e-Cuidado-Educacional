@@ -20,38 +20,52 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const response = await fetch(`../src/controllers/profissional_get_alunos.php?id_turma=${idTurma}`);
+            const response = await fetch(`../src/controllers/profissional/profissional_get_alunos.php?id_turma=${idTurma}`);
             const result = await response.json();
             const lista = document.getElementById('lista-alunos');
             
             if (result.status === 'ok') {
                 if (result.data.length === 0) {
-                    lista.innerHTML = '<div class="col-12"><p class="text-dark">Nenhum aluno encontrado nesta turma sob sua responsabilidade.</p></div>';
+                    lista.innerHTML = '<p class="text-dark">Sem alunos cadastrados.</p>';
                     return;
                 }
 
-                var html = '';
+                var html = `
+                <table class="table table-striped table-hover mt-3">
+                    <thead>
+                        <tr>
+                            <th> Nome </th>
+                            <th> Matrícula </th>
+                            <th> Série </th>
+                            <th> Ações </th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
                 for (var i = 0; i < result.data.length; i++) {
                     const aluno = result.data[i];
                     html += `
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100 shadow">
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title">${aluno.nome}</h5>
-                                <p class="card-text text-muted">Matrícula: ${aluno.matricula}</p>
-                                <a href="aluno.html?id=${aluno.id}" class="btn btn-success mt-auto">Acessar Perfil</a>
-                            </div>
-                        </div>
-                    </div>
+                        <tr>
+                            <td data-label="Nome">
+                                <a href="aluno_detalhes.html?id=${aluno.id}">
+                                    ${aluno.nome}
+                                </a>
+                            </td>
+                            <td data-label="Matrícula">${aluno.matricula}</td>
+                            <td data-label="Série">${aluno.serie}</td>
+                            <td data-label="Ações">
+                                <a href="aluno_detalhes.html?id=${aluno.id}" class="btn btn-sm btn-success">Acessar Perfil</a>
+                            </td>
+                        </tr>
                     `;
                 }
+                html += '</tbody></table>';
                 lista.innerHTML = html;
             } else {
-                lista.innerHTML = `<div class="col-12"><p class="text-danger">Erro: ${result.mensagem}</p></div>`;
+                lista.innerHTML = `<p class="text-danger">Erro: ${result.mensagem}</p>`;
             }
         } catch (error) {
             console.error('Erro ao carregar alunos:', error);
-            document.getElementById('lista-alunos').innerHTML = '<div class="col-12"><p class="text-danger">Erro na conexão com o servidor.</p></div>';
+            document.getElementById('lista-alunos').innerHTML = '<p class="text-danger">Erro na conexão com o servidor.</p>';
         }
     }
 

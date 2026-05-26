@@ -1,9 +1,36 @@
 // Carregar SweetAlert2 dinamicamente e sobrescrever window.alert com fila resiliente
-(function() {
+(function () {
     let alertQueue = [];
     let swalLoaded = false;
 
+    function sanitizeErrorMessage(message) {
+        if (typeof message !== 'string') return message;
+
+        const lower = message.toLowerCase();
+        const isTechnical = 
+            lower.includes('erro no banco') || 
+            lower.includes('database error') || 
+            lower.includes('mysql') || 
+            lower.includes('select ') || 
+            lower.includes('insert ') || 
+            lower.includes('update ') || 
+            lower.includes('delete ') || 
+            lower.includes('join ') || 
+            lower.includes('foreign key') || 
+            lower.includes('sqlstate') ||
+            lower.includes('query') ||
+            lower.includes('prepare') ||
+            lower.includes('bind_param');
+
+        if (isTechnical) {
+            console.error("Detalhes do erro técnico de banco interceptado:", message);
+            return "Ocorreu um erro de comunicação ou processamento no banco de dados. Por favor, tente novamente.";
+        }
+        return message;
+    }
+
     window.alert = (message) => {
+        message = sanitizeErrorMessage(message);
         if (swalLoaded) {
             triggerSwalAlert(message);
         } else {
@@ -12,6 +39,7 @@
     };
 
     window.showAlertAndRedirect = (message, url) => {
+        message = sanitizeErrorMessage(message);
         if (swalLoaded) {
             triggerSwalRedirect(message, url);
         } else {
@@ -48,7 +76,7 @@
         let icon = 'info';
         let title = 'Aviso';
         const lower = String(message).toLowerCase();
-        
+
         if (lower.includes('erro') || lower.includes('não foi') || lower.includes('negado') || lower.includes('obrigatório') || lower.includes('inválido') || lower.includes('falhou')) {
             icon = 'error';
             title = 'Erro';
@@ -59,7 +87,7 @@
             icon = 'warning';
             title = 'Atenção';
         }
-        
+
         Swal.fire({
             title: title,
             text: message,
@@ -73,7 +101,7 @@
         let icon = 'info';
         let title = 'Aviso';
         const lower = String(message).toLowerCase();
-        
+
         if (lower.includes('erro') || lower.includes('não foi') || lower.includes('negado') || lower.includes('obrigatório') || lower.includes('inválido') || lower.includes('falhou')) {
             icon = 'error';
             title = 'Erro';
@@ -84,7 +112,7 @@
             icon = 'warning';
             title = 'Atenção';
         }
-        
+
         Swal.fire({
             title: title,
             text: message,
@@ -105,7 +133,7 @@ async function valida_sessao() {
     const retorno = await fetch('../src/config/valida_sessao.php');
     const resposta = await retorno.json();
 
-    if(resposta.status == 'nok'){
+    if (resposta.status == 'nok') {
         if (!window.location.pathname.endsWith('visitante.html')) {
             window.location.href = 'visitante.html';
         }
@@ -121,11 +149,13 @@ async function valida_sessao() {
 
         window.usuarioLogado = usuario;
 
-        // Redirect rules
-        if (cargo === '1' && (url.endsWith('index.html') || url.endsWith('/'))) {
-            window.location.href = 'painel_admin.html';
+        // Se o usuário está logado e tenta acessar visitante.html, redireciona para a Home logada
+        if (url.endsWith('visitante.html')) {
+            window.location.href = 'index.html';
             return;
         }
+
+        // Redirect rules
 
         if (cargo === '3' && (url.endsWith('index.html') || url.endsWith('/') || url.includes('painel_admin') || url.includes('secao_estudante'))) {
             window.location.href = 'painel_profissional.html';
@@ -157,12 +187,12 @@ async function valida_sessao() {
         // Para professor
         if (cargo === '4') {
             if (
-                url.includes('instituicao_cadastrar') ||
-                url.includes('instituicao_alterar') ||
+                url.includes('instituicao') ||
                 url.includes('turma_cadastrar') ||
                 url.includes('turma_alterar') ||
                 url.includes('aluno_cadastrar') ||
-                url.includes('aluno_alterar')
+                url.includes('aluno_alterar') ||
+                url.includes('cadastro_admin')
             ) {
                 window.location.href = 'index.html';
                 return;
@@ -187,18 +217,23 @@ async function valida_sessao() {
                             link.parentElement.style.display = 'none';
                         }
                     }
+                } else if (cargo === '2' || cargo === '4') {
+                    // Pedagogo e Professor: Ocultar Usuários e Instituições
+                    if (text.includes('usuários') || text.includes('usuarios') || text.includes('instituição') || text.includes('instituições') || text.includes('instituicao')) {
+                        link.parentElement.style.display = 'none';
+                    }
                 }
             });
 
             // Se for Profissional da Saúde (cargo = 3) e estiver em uma página geral
             if (cargo === '3') {
                 const urlLower = url.toLowerCase();
-                const isProfessionalPage = 
-                    urlLower.includes('painel_profissional') || 
-                    urlLower.includes('profissional_instituicoes') || 
-                    urlLower.includes('profissional_alunos') || 
+                const isProfessionalPage =
+                    urlLower.includes('painel_profissional') ||
+                    urlLower.includes('profissional_instituicoes') ||
+                    urlLower.includes('profissional_alunos') ||
                     urlLower.includes('profissional_turmas');
-                
+
                 if (!isProfessionalPage) {
                     const navContainer = document.querySelector('.navbar-nav');
                     if (navContainer) {
@@ -218,7 +253,7 @@ async function valida_sessao() {
                 }
             }
 
-        // Mensagem de "Bem-vindo!!!"
+            // Mensagem de "Bem-vindo!!!"
             const navRight = document.querySelector('.navbar-nav.ms-auto');
             if (navRight && !document.getElementById('msg-boas-vindas')) {
                 const cargoMap = {
@@ -228,12 +263,31 @@ async function valida_sessao() {
                     '4': 'Professor',
                     '5': 'Responsável Legal'
                 };
-                const cargoNome = cargoMap[cargo] || 'Usuário';
+                let cargoNome = cargoMap[cargo] || 'Usuário';
+                if (cargo === '1') {
+                    cargoNome = nivel_permissao === '0' ? 'Administrador Global' : 'Administrador Institucional';
+                }
+
+                let suffix = '';
+                if (usuario.instituicoes && usuario.instituicoes.length > 0) {
+                    suffix = usuario.instituicoes[0].nome;
+                } else if (usuario.nome_instituicao && usuario.nome_instituicao !== 'Sem vínculo') {
+                    suffix = usuario.nome_instituicao;
+                }
+
+                const welcomeText = `
+                    <div class="d-flex flex-column text-end" style="line-height: 1.25;">
+                        <span style="font-size: 0.9rem; font-weight: 600; color: #ffffff;">Bem-vindo, ${usuario.nome}</span>
+                        <span style="font-size: 0.72rem; color: #b0bec5; font-weight: 400; letter-spacing: 0.3px;">
+                            ${cargoNome}${suffix ? ` | <span style="color: #ffca28; font-weight: 500;">${suffix}</span>` : ''}
+                        </span>
+                    </div>
+                `;
 
                 const li = document.createElement('li');
                 li.id = 'msg-boas-vindas';
                 li.className = 'nav-item d-flex align-items-center me-3 text-light';
-                li.innerHTML = `<strong>Bem-vindo, ${usuario.nome} (${cargoNome})!</strong>`;
+                li.innerHTML = welcomeText;
                 navRight.insertBefore(li, navRight.firstChild);
             }
         };
@@ -255,14 +309,14 @@ function applyInputGuidelines() {
     inputs.forEach(input => {
         const id = input.id ? input.id.toLowerCase() : '';
         const name = input.name ? input.name.toLowerCase() : '';
-        
+
         // Define quais campos são obrigatórios no sistema
-        const isMandatory = 
-            id === 'nome' || 
-            id === 'email' || 
-            id === 'cpf' || 
-            id === 'senha' || 
-            id === 'telefone' || 
+        const isMandatory =
+            id === 'nome' ||
+            id === 'email' ||
+            id === 'cpf' ||
+            id === 'senha' ||
+            id === 'telefone' ||
             id === 'cargo' ||
             id === 'id_instituicao' ||
             id === 'instituicao' ||
@@ -271,10 +325,10 @@ function applyInputGuidelines() {
             id === 'especializacao' ||
             id === 'nivel_permissao' ||
             input.hasAttribute('required');
-            
+
         if (isMandatory) {
             input.setAttribute('required', 'true');
-            
+
             // Procura o label correspondente
             let label = document.querySelector(`label[for="${input.id}"]`);
             if (!label) {
@@ -283,7 +337,7 @@ function applyInputGuidelines() {
                     label = prev;
                 }
             }
-            
+
             if (label && !label.innerHTML.includes('*')) {
                 label.innerHTML += ' <span style="color: #dc3545;" title="Campo obrigatório">*</span>';
             }
@@ -391,7 +445,57 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 async function logoff() {
     const retorno = await fetch('../src/controllers/usuario_logoff.php');
     const resposta = await retorno.json();
-    if(resposta.status == 'ok'){
+    if (resposta.status == 'ok') {
         window.location.href = 'login.html';
     }
+}
+
+// Função utilitária global para validação matemática de CPF
+function validarCPF(cpf) {
+    // Remove caracteres especiais
+    cpf = cpf.replace(/\D/g, '');
+    
+    // Testa tamanho e padrões repetidos conhecidos (ex: 11111111111)
+    if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+    
+    // Valida 1º dígito verificador
+    let soma = 0;
+    for (let i = 0; i < 9; i++) soma += parseInt(cpf.charAt(i)) * (10 - i);
+    let resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.charAt(9))) return false;
+    
+    // Valida 2º dígito verificador
+    soma = 0;
+    for (let i = 0; i < 10; i++) soma += parseInt(cpf.charAt(i)) * (11 - i);
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.charAt(10))) return false;
+    
+    return true;
+}
+
+// Função utilitária global para validação de E-mail
+function validarEmail(email) {
+    const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return re.test(email);
+}
+
+// Função utilitária global para validação de Telefone (padrão brasileiro celular/fixo com DDD)
+function validarTelefone(tel) {
+    const limpo = tel.replace(/\D/g, '');
+    const re = /^(?:[1-9]{2})(?:[2-8]|9[1-9])[0-9]{3}[0-9]{4}$/;
+    return re.test(limpo);
+}
+
+// Função utilitária global para validação de CRM (Conselho Regional de Medicina)
+function validarCRM(crm) {
+    const re = /^\d{4,6}\/[A-Z]{2}$/i;
+    return re.test(crm.trim());
+}
+
+// Função utilitária global para validação de CRP (Conselho Regional de Psicologia)
+function validarCRP(crp) {
+    const re = /^\d{2}\/\d{4,6}$/;
+    return re.test(crp.trim());
 }
